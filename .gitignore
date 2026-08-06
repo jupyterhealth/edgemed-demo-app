@@ -54,6 +54,8 @@ lib/config/l10n/generated
 
 # Env
 .env.json
+.env.*.json
+!.env.*.json.example
 
 sentry.properties
 
