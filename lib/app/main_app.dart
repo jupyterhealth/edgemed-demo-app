@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jupyter_health/app/cubits/auth_cubit/auth_cubit.dart';
 import 'package:jupyter_health/app/cubits/locale_cubit/locale_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
@@ -15,6 +16,7 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt<LocaleCubit>()..init()),
+        BlocProvider(create: (context) => getIt<AuthCubit>()),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, localeState) => GestureDetector(

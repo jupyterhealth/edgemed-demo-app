@@ -1,7 +1,7 @@
 global_options:
   json_serializable:
     options:
-      field_rename: snake
+      field_rename: none
 
 targets:
   $default:

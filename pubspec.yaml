@@ -41,6 +41,7 @@ dev_dependencies:
   flutter_gen_runner: ^5.12.0
   freezed: 3.2.5
   hive_ce_generator: 1.11.1
+  json_serializable: ^6.14.1
 
 flutter:
   generate: true
