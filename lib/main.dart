@@ -1,9 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:jupyter_health/app/main_app.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:jupyter_health/config/env/env.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await configureDependencies();
+  if (kDebugMode) {
+    await _initializeApp(useSentryBinding: false);
+    runApp(const MainApp());
+    return;
+  }
+
+  await _initializeApp(useSentryBinding: true);
+  await SentryFlutter.init((options) {
+    options
+      ..dsn = Env.sentryDsn
+      ..tracesSampleRate = 0.5
+      ..environment = Env.current.name;
+  }, appRunner: () => runApp(SentryWidget(child: const MainApp())));
   runApp(const MainApp());
+}
+
+Future<void> _initializeApp({required bool useSentryBinding}) async {
+  late final WidgetsBinding widgetsBinding;
+  if (useSentryBinding) {
+    widgetsBinding = SentryWidgetsFlutterBinding.ensureInitialized();
+  } else {
+    widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  }
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Future.wait([
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]),
+    configureDependencies(),
+  ]);
 }
