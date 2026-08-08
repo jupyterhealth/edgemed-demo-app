@@ -9,6 +9,7 @@ class Env {
   );
 
   static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static const String sentryDsn = String.fromEnvironment('SENTRY_DSN');
 
   static bool get enableLogging =>
       kDebugMode || current == EnvironmentType.staging;
