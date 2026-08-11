@@ -6,6 +6,7 @@ import 'package:jupyter_health/app/cubits/locale_cubit/locale_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/config/routing/app_router.dart';
+import 'package:jupyter_health/config/theme/app_theme.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -26,7 +27,7 @@ class MainApp extends StatelessWidget {
             localizationsDelegates: L10n.localizationDelegates,
             supportedLocales: L10n.supported,
             locale: localeState.locale,
-            // theme: AppTheme.light().toThemeData(),
+            theme: AppTheme.light().toThemeData(),
             routerConfig: router.config(
               navigatorObservers: () => [AutoRouteObserver()],
             ),
