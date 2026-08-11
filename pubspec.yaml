@@ -26,11 +26,13 @@ dependencies:
   flutter_svg: ^2.2.3
   flutter_gen: ^5.12.0
   freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
   hive_ce_flutter: ^2.3.4
   hive_ce: ^2.19.3
   flutter_secure_storage: ^10.0.0
   open_wearables_health_sdk: ^0.0.20
   sentry_flutter: ^9.26.0
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jupyter_health/app/cubits/auth_cubit/auth_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
+import 'package:jupyter_health/config/routing/app_router.gr.dart';
 
 @RoutePage()
 class AppStartupPage extends StatelessWidget {
@@ -16,7 +17,7 @@ class AppStartupPage extends StatelessWidget {
         listener: (context, state) {
           state.whenOrNull(
             authenticated: (user) {
-              print(user);
+              context.router.replace(const DashboardRoute());
             },
             unauthenticated: () {
               print('unauthenticated');
