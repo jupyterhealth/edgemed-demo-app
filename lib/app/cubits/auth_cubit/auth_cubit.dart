@@ -15,10 +15,13 @@ class AuthCubit extends Cubit<AuthState> {
   final LocalStorageRepository _localStorageRepository;
   AuthCubit(this._apiRepository, this._localStorageRepository)
     : super(AuthState.loading());
-
+  // REDACTED_TOKEN
+  // REDACTED_TOKEN
   void fetchUser() async {
     emit(AuthState.loading());
-    await _localStorageRepository.setAccessToken('REDACTED_TOKEN');
+    await _localStorageRepository.setAccessToken(
+      'REDACTED_TOKEN',
+    );
     final userResult = await _apiRepository.getUser();
     userResult.fold(
       (l) {

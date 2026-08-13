@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jupyter_health/config/theme/theme_extensions.dart';
+import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class ModeSwitch extends StatelessWidget {
   final bool value;
@@ -9,34 +9,27 @@ class ModeSwitch extends StatelessWidget {
 
   static const _animationDuration = Duration(milliseconds: 220);
   static const _animationCurve = Curves.easeInOut;
-  static const _inset = 4.0;
+  static const _inset = 2.0;
   static const _radius = 10.0;
+  static const _labelVerticalPadding = 5.0;
+  static const _labelHorizontalPadding = 12.0;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final typography = context.typography;
-
-    final selectedStyle = typography.captionSemiBold.copyWith(
-      color: colors.primaryBeige800,
-    );
-    final unselectedStyle = typography.captionMedium.copyWith(
-      color: colors.systemGrey400,
-    );
+    final colors = context.theme;
 
     return Container(
-      width: 133,
+      width: 150,
       decoration: BoxDecoration(
-        color: Color(0xFFF4F6F9),
+        color: colors.backgroundSecondary,
         borderRadius: BorderRadius.circular(_radius),
       ),
       child: Padding(
         padding: const EdgeInsets.all(_inset),
-        child: SizedBox(
-          height: 36,
-          child: Stack(
-            children: [
-              AnimatedAlign(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedAlign(
                 duration: _animationDuration,
                 curve: _animationCurve,
                 alignment: value ? Alignment.centerLeft : Alignment.centerRight,
@@ -58,40 +51,56 @@ class ModeSwitch extends StatelessWidget {
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: onChanged == null ? null : () => onChanged!(true),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onChanged == null ? null : () => onChanged!(true),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: _labelVerticalPadding,
+                        horizontal: _labelHorizontalPadding,
+                      ),
                       child: Center(
                         child: AnimatedDefaultTextStyle(
                           duration: _animationDuration,
                           curve: _animationCurve,
-                          style: value ? selectedStyle : unselectedStyle,
-                          child: const Text('Hourly'),
+                          style: context.typography.bodyMedium.copyWith(
+                            color: value ? colors.black : colors.textSecondary,
+                          ),
+                          child: Text('Hourly'),
                         ),
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: onChanged == null ? null : () => onChanged!(false),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onChanged == null ? null : () => onChanged!(false),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: _labelVerticalPadding,
+                        horizontal: _labelHorizontalPadding,
+                      ),
                       child: Center(
                         child: AnimatedDefaultTextStyle(
                           duration: _animationDuration,
                           curve: _animationCurve,
-                          style: value ? unselectedStyle : selectedStyle,
-                          child: const Text('Daily'),
+                          style: context.typography.bodyMedium.copyWith(
+                            color: value ? colors.textSecondary : colors.black,
+                          ),
+                          child: Text('Daily'),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

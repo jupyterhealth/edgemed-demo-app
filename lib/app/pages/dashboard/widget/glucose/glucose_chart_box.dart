@@ -1,47 +1,28 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/glucose/glucose_chart.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/mode_switch.dart';
 import 'package:jupyter_health/domain/entity/observations/observation.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_data.dart';
-import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
+import 'package:jupyter_health/utils/extensions/date_time_extension.dart';
+import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class GlucoseChartBox extends StatefulWidget {
-  const GlucoseChartBox({super.key});
+  final List<Observation> observations;
+  const GlucoseChartBox({super.key, required this.observations});
 
   @override
   State<GlucoseChartBox> createState() => _GlucoseChartBoxState();
 }
 
 class _GlucoseChartBoxState extends State<GlucoseChartBox> {
-  late Observation _selectedObservation;
   bool _mode = true;
+  late Observation _selectedObservation;
 
   @override
   void initState() {
     super.initState();
-    _selectedObservation = _generateObservations().first;
-  }
-
-  List<Observation> _generateObservations() {
-    final observations = <Observation>[];
-    final random = Random();
-    for (int i = 0; i < 1000; i++) {
-      observations.add(
-        Observation(
-          id: '${i + 1}',
-          type: ObservationType.glucose,
-          data: ObservationData.glucose(
-            value: random.nextInt(20).toDouble() + 20,
-            date: DateTime(2026, 1, 1, 0, 0, 0).add(Duration(minutes: i * 15)),
-          ),
-          date: DateTime(2026, 1, 1, 0, 0, 0).add(Duration(minutes: i * 15)),
-        ),
-      );
-    }
-    return observations;
+    _selectedObservation = widget.observations.first;
   }
 
   @override
@@ -53,33 +34,45 @@ class _GlucoseChartBoxState extends State<GlucoseChartBox> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Glucose'),
+              Text('Glucose', style: context.typography.bodyLarge),
               ModeSwitch(
                 value: _mode,
                 onChanged: (value) => setState(() => _mode = value),
               ),
             ],
           ),
-
+          SizedBox(height: 8),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(
-                child: Text(
-                  '${_selectedObservation.data.mapOrNull(glucose: (value) => value.value.toStringAsFixed(0))} mg/dL',
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          '${_selectedObservation.data.mapOrNull(glucose: (value) => value.value.toStringAsFixed(0))}',
+                      style: context.typography.headerLarge,
+                    ),
+                    TextSpan(
+                      text: ' mg/dL',
+                      style: context.typography.bodyMedium,
+                    ),
+                  ],
                 ),
               ),
-              Expanded(
-                child: Text(
-                  'measured: ${_selectedObservation.date.toLocal().toString()}',
-                ),
+              Text(
+                'measured: ${_selectedObservation.date.toMeasuredLabel(isHourly: _mode)}',
+                style: context.typography.bodySmall,
               ),
             ],
           ),
+          SizedBox(height: 12),
           GlucoseChart(
             isHourly: _mode,
             onObservationSelected: (observation) =>
                 setState(() => _selectedObservation = observation),
-            observations: _generateObservations(),
+            observations: widget.observations,
           ),
         ],
       ),
