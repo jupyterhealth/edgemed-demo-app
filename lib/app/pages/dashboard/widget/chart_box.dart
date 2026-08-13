@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class ChartBox extends StatelessWidget {
   final Widget child;
@@ -6,9 +7,22 @@ class ChartBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Color.fromARGB(255, 255, 255, 255),
-      child: Padding(padding: EdgeInsets.all(12), child: child),
+    final colors = context.theme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFFF4F6F9)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0x62560C33),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(padding: const EdgeInsets.all(12), child: child),
     );
   }
 }

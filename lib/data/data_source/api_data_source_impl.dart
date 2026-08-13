@@ -16,6 +16,6 @@ abstract class ApiDataSource {
   @GET('/api/v1/users/profile')
   Future<HttpResponse<User>> getUser();
 
-  @GET('/FHIR/R5/Observation?date=ge2025-01-01&date=le2026-08-01')
+  @GET('/FHIR/R5/Observation?date=ge2025-01-01&date=le2026-08-12')
   Future<HttpResponse<ObservationBundleDto>> getObservations();
 }

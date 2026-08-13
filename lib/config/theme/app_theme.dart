@@ -14,29 +14,35 @@ class AppTheme {
   final AppTypography typography;
 
   ThemeData toThemeData() {
-    final base = ThemeData(useMaterial3: true);
-    final defaultBody = typography.bodyRegular;
+    final base = ThemeData(
+      useMaterial3: true,
+      fontFamily: AppTypography.fontFamily,
+    );
 
     return base.copyWith(
       colorScheme: ColorScheme.light(
-        primary: colors.primaryBeige500,
+        primary: colors.primary,
         onPrimary: colors.black,
-        secondary: colors.primaryBeige200,
-        onSecondary: colors.primaryGreen500,
-        error: colors.systemRed500,
-        onError: colors.white,
-        surface: colors.primaryBeige50,
+        secondary: colors.secondary,
+        onSecondary: colors.black,
+        surface: colors.primary,
         onSurface: colors.black,
+        error: colors.error,
+        onError: colors.white,
       ),
-      scaffoldBackgroundColor: colors.primaryBeige50,
-      textTheme: base.textTheme.copyWith(
-        bodyMedium: defaultBody,
-        bodyLarge: defaultBody,
+      scaffoldBackgroundColor: colors.white,
+      textTheme: base.textTheme.apply(
+        fontFamily: AppTypography.fontFamily,
+        bodyColor: colors.black,
+        displayColor: colors.black,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: colors.white,
-          backgroundColor: colors.primaryGreen700,
+          foregroundColor: colors.black,
+          backgroundColor: colors.primary,
+          disabledForegroundColor: colors.textSecondary,
+          disabledBackgroundColor: colors.disabled,
+          textStyle: typography.buttonLarge,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
