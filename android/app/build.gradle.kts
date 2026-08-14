@@ -59,13 +59,16 @@ android {
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".staging"
+            signingConfig = signingConfigs.getByName("stagingRelease")
         }
         create("preprod") {
             dimension = "env"
             applicationIdSuffix = ".preprod"
+            signingConfig = signingConfigs.getByName("preprodRelease")
         }
         create("prod") {
             dimension = "env"
+            signingConfig = signingConfigs.getByName("prodRelease")
         }
     }
 
