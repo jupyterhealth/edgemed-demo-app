@@ -17,7 +17,7 @@ class AppStartupPage extends StatelessWidget {
         listener: (context, state) {
           state.whenOrNull(
             authenticated: (user) {
-              context.router.replace(const DashboardRoute());
+              context.router.replace(const WelcomeRoute());
             },
             unauthenticated: () {
               print('unauthenticated');
