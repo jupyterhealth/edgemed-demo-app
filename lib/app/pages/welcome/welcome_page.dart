@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jupyter_health/app/common/widgets/button.dart';
 import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
+import 'package:jupyter_health/config/routing/app_router.gr.dart';
 import 'package:jupyter_health/gen/assets.gen.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
@@ -39,7 +40,10 @@ class WelcomePage extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Button(text: 'Get Started', onPressed: () {}),
+            child: Button(
+              text: 'Get Started',
+              onPressed: () => context.router.replace(const DashboardRoute()),
+            ),
           ),
         ],
       ),
