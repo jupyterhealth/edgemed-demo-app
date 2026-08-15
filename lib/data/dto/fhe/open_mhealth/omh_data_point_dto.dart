@@ -22,13 +22,12 @@ abstract class OmhDataPointDto with _$OmhDataPointDto {
 
 @freezed
 abstract class OmhHeaderDto with _$OmhHeaderDto {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory OmhHeaderDto({
     required String uuid,
     String? modality,
-    @JsonKey(name: 'schema_id') required OmhSchemaIdDto schemaId,
-    @JsonKey(name: 'external_datasheets')
+    required OmhSchemaIdDto schemaId,
     List<OmhExternalDatasheetDto>? externalDatasheets,
-    @JsonKey(name: 'source_creation_date_time')
     DateTime? sourceCreationDateTime,
   }) = _OmhHeaderDto;
 
@@ -50,9 +49,10 @@ abstract class OmhSchemaIdDto with _$OmhSchemaIdDto {
 
 @freezed
 abstract class OmhExternalDatasheetDto with _$OmhExternalDatasheetDto {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory OmhExternalDatasheetDto({
-    @JsonKey(name: 'datasheet_type') required String datasheetType,
-    @JsonKey(name: 'datasheet_reference') required String datasheetReference,
+    required String datasheetType,
+    required String datasheetReference,
   }) = _OmhExternalDatasheetDto;
 
   factory OmhExternalDatasheetDto.fromJson(Map<String, dynamic> json) =>
@@ -61,17 +61,20 @@ abstract class OmhExternalDatasheetDto with _$OmhExternalDatasheetDto {
 
 @freezed
 abstract class OmhBodyDto with _$OmhBodyDto {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory OmhBodyDto({
-    @JsonKey(name: 'effective_time_frame')
     OmhEffectiveTimeFrameDto? effectiveTimeFrame,
-    @JsonKey(name: 'heart_rate') OmhUnitValueDto? heartRate,
-    @JsonKey(name: 'systolic_blood_pressure')
+    OmhUnitValueDto? heartRate,
     OmhUnitValueDto? systolicBloodPressure,
-    @JsonKey(name: 'diastolic_blood_pressure')
     OmhUnitValueDto? diastolicBloodPressure,
-    @JsonKey(name: 'blood_glucose') OmhUnitValueDto? bloodGlucose,
-    @JsonKey(name: 'step_count') OmhUnitValueDto? stepCount,
-    @JsonKey(name: 'sleep_duration') OmhUnitValueDto? sleepDuration,
+    OmhUnitValueDto? bloodGlucose,
+    OmhUnitValueDto? stepCount,
+    OmhUnitValueDto? sleepDuration,
+    OmhUnitValueDto? totalSleepTime,
+    OmhUnitValueDto? lightSleepDuration,
+    OmhUnitValueDto? deepSleepDuration,
+    OmhUnitValueDto? remSleepDuration,
+    OmhUnitValueDto? baseMovementQuantity,
   }) = _OmhBodyDto;
 
   factory OmhBodyDto.fromJson(Map<String, dynamic> json) =>
@@ -80,10 +83,8 @@ abstract class OmhBodyDto with _$OmhBodyDto {
 
 @freezed
 abstract class OmhUnitValueDto with _$OmhUnitValueDto {
-  const factory OmhUnitValueDto({
-    required String unit,
-    required double value,
-  }) = _OmhUnitValueDto;
+  const factory OmhUnitValueDto({required String unit, required double value}) =
+      _OmhUnitValueDto;
 
   factory OmhUnitValueDto.fromJson(Map<String, dynamic> json) =>
       _$OmhUnitValueDtoFromJson(json);
@@ -91,9 +92,10 @@ abstract class OmhUnitValueDto with _$OmhUnitValueDto {
 
 @freezed
 abstract class OmhEffectiveTimeFrameDto with _$OmhEffectiveTimeFrameDto {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory OmhEffectiveTimeFrameDto({
-    @JsonKey(name: 'date_time') DateTime? dateTime,
-    @JsonKey(name: 'time_interval') OmhTimeIntervalDto? timeInterval,
+    DateTime? dateTime,
+    OmhTimeIntervalDto? timeInterval,
   }) = _OmhEffectiveTimeFrameDto;
 
   factory OmhEffectiveTimeFrameDto.fromJson(Map<String, dynamic> json) =>
@@ -102,9 +104,10 @@ abstract class OmhEffectiveTimeFrameDto with _$OmhEffectiveTimeFrameDto {
 
 @freezed
 abstract class OmhTimeIntervalDto with _$OmhTimeIntervalDto {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory OmhTimeIntervalDto({
-    @JsonKey(name: 'start_date_time') DateTime? startDateTime,
-    @JsonKey(name: 'end_date_time') DateTime? endDateTime,
+    DateTime? startDateTime,
+    DateTime? endDateTime,
   }) = _OmhTimeIntervalDto;
 
   factory OmhTimeIntervalDto.fromJson(Map<String, dynamic> json) =>

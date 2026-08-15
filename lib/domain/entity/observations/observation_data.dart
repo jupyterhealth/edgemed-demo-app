@@ -20,6 +20,9 @@ abstract class ObservationData with _$ObservationData {
   const factory ObservationData.sleep({
     required double value,
     required DateTime date,
+    @Default(0) double deep,
+    @Default(0) double rem,
+    @Default(0) double light,
   }) = _Sleep;
   const factory ObservationData.steps({
     required double value,

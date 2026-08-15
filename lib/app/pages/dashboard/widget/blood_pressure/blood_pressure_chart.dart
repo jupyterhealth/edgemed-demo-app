@@ -12,12 +12,14 @@ class BloodPressureChart extends StatelessWidget {
   final List<Observation> observations;
   final bool isHourly;
   final void Function(Observation observation) onObservationSelected;
+  final VoidCallback? onLoadMore;
 
   const BloodPressureChart({
     super.key,
     required this.observations,
     required this.isHourly,
     required this.onObservationSelected,
+    this.onLoadMore,
   });
 
   @override
@@ -72,6 +74,7 @@ class BloodPressureChart extends StatelessWidget {
           (x: point.systolicSpot.x, data: point.observation),
       ],
       onPointSelected: onObservationSelected,
+      onReachOlderData: onLoadMore,
       buildSeries: (chartContext) => [
         _series(
           spots: diastolicSpots,

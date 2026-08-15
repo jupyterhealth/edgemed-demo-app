@@ -1,4 +1,34 @@
 {
   "@@locale": "en",
-  "appName": "Jupyter Health"
+  "appName": "Jupyter Health",
+  "retry": "Retry",
+  "unauthorized": "Unauthorized",
+  "forbidden": "Forbidden",
+  "serverError": "Server error",
+  "unexpected": "Something went wrong",
+  "somethingWentWrong": "Something went wrong",
+  "welcomeToUcsfEdge": "Welcome to UCSF Edge!",
+  "currentHealthData": "Here is your current health data:",
+  "glucose": "Glucose",
+  "bloodPressure": "Blood Pressure",
+  "steps": "Steps",
+  "sleep": "Sleep",
+  "hourly": "Hourly",
+  "daily": "Daily",
+  "loadOlderData": "Load older data",
+  "measured": "measured: {date}",
+  "@measured": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "glucoseUnit": "mg/dL",
+  "systolicUnit": "SYS/mmHg",
+  "diastolicUnit": "DIA/mmHg",
+  "stepsUnit": "steps",
+  "deepSleep": "deep sleep",
+  "rem": "REM",
+  "lightSleep": "light sleep"
 }
