@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class ModeSwitch extends StatelessWidget {
@@ -70,7 +71,7 @@ class ModeSwitch extends StatelessWidget {
                           style: context.typography.bodyMedium.copyWith(
                             color: value ? colors.black : colors.textSecondary,
                           ),
-                          child: Text('Hourly'),
+                          child: Text(T(context).hourly),
                         ),
                       ),
                     ),
@@ -92,7 +93,7 @@ class ModeSwitch extends StatelessWidget {
                           style: context.typography.bodyMedium.copyWith(
                             color: value ? colors.textSecondary : colors.black,
                           ),
-                          child: Text('Daily'),
+                          child: Text(T(context).daily),
                         ),
                       ),
                     ),

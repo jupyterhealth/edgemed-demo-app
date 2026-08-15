@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:jupyter_health/data/dto/jhe/open_mhealth/omh_data_point_dto.dart';
 import 'package:jupyter_health/data/utils/converters.dart';
 import 'package:jupyter_health/domain/entity/observations/observation.dart';
+import 'package:jupyter_health/domain/entity/observations/observation_page.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
 
 part 'observation_dto.freezed.dart';
@@ -9,6 +10,8 @@ part 'observation_dto.g.dart';
 
 @freezed
 abstract class ObservationBundleDto with _$ObservationBundleDto {
+  const ObservationBundleDto._();
+
   const factory ObservationBundleDto({
     required String resourceType,
     required String type,
@@ -20,6 +23,21 @@ abstract class ObservationBundleDto with _$ObservationBundleDto {
 
   factory ObservationBundleDto.fromJson(Map<String, dynamic> json) =>
       _$ObservationBundleDtoFromJson(json);
+
+  String? get nextUrl {
+    for (final item in link) {
+      if (item.relation == 'next') return item.url;
+    }
+    return null;
+  }
+
+  ObservationPage toPage({required String code}) => ObservationPage(
+    observations: entry
+        .map((e) => e.resource.toDomain())
+        .whereType<Observation>()
+        .toList(),
+    nextUrls: {code: ?nextUrl},
+  );
 }
 
 @freezed
@@ -40,7 +58,7 @@ abstract class ObservationDto with _$ObservationDto {
     required String id,
     required String status,
     required FhirCodeableConceptDto code,
-    DateTime? effectiveDateTime,
+    @FhirDateTimeConverter() DateTime? effectiveDateTime,
     FhirReferenceDto? subject,
     FhirValueAttachmentDto? valueAttachment,
     FhirMetaDto? meta,

@@ -38,11 +38,51 @@ abstract class OmhDataPointDto with _$OmhDataPointDto {
           diastolic: body.diastolicBloodPressure!.value,
           date: date,
         ),
-      ObservationType.sleep when body.sleepDuration != null =>
-        ObservationData.sleep(value: body.sleepDuration!.value, date: date),
-      ObservationType.steps when body.stepCount != null =>
-        ObservationData.steps(value: body.stepCount!.value, date: date),
+      ObservationType.sleep => _toSleep(body, date),
+      ObservationType.steps when _stepsValue(body) != null =>
+        ObservationData.steps(value: _stepsValue(body)!, date: date),
       _ => ObservationData.unknown(value: header.schemaId.name, date: date),
+    };
+  }
+
+  static ObservationData _toSleep(OmhBodyDto body, DateTime date) {
+    final deep = _optionalSleepHours(body.deepSleepDuration);
+    final rem = _optionalSleepHours(body.remSleepDuration);
+    final light = _optionalSleepHours(body.lightSleepDuration);
+    final totalDuration = body.totalSleepTime ?? body.sleepDuration;
+    final total = totalDuration != null
+        ? _sleepHours(totalDuration)
+        : deep + rem + light;
+
+    return ObservationData.sleep(
+      value: total,
+      date: date,
+      deep: deep,
+      rem: rem,
+      light: light,
+    );
+  }
+
+  static double? _stepsValue(OmhBodyDto body) {
+    final quantity = body.baseMovementQuantity;
+    if (quantity != null && quantity.unit?.toLowerCase() == 'steps') {
+      return quantity.value;
+    }
+    return body.stepCount?.value;
+  }
+
+  static double _optionalSleepHours(OmhUnitValueDto? duration) =>
+      duration == null ? 0 : _sleepHours(duration);
+
+  static double _sleepHours(OmhUnitValueDto duration) {
+    final value = duration.value;
+    return switch (duration.unit?.toLowerCase()) {
+      'min' || 'minute' || 'minutes' => value / 60,
+      'sec' || 's' || 'second' || 'seconds' => value / 3600,
+      'ms' => value / 3600000,
+      'd' || 'day' || 'days' => value * 24,
+      'h' || 'hr' || 'hour' || 'hours' => value,
+      _ => value > 24 ? value / 60 : value,
     };
   }
 }
@@ -51,7 +91,7 @@ abstract class OmhDataPointDto with _$OmhDataPointDto {
 abstract class OmhHeaderDto with _$OmhHeaderDto {
   @JsonSerializable(explicitToJson: true)
   const factory OmhHeaderDto({
-    required String uuid,
+    String? uuid,
     String? modality,
     @JsonKey(name: 'schema_id') required OmhSchemaIdDto schemaId,
     @JsonKey(name: 'external_datasheets')
@@ -102,6 +142,12 @@ abstract class OmhBodyDto with _$OmhBodyDto {
     @JsonKey(name: 'blood_glucose') OmhUnitValueDto? bloodGlucose,
     @JsonKey(name: 'step_count') OmhUnitValueDto? stepCount,
     @JsonKey(name: 'sleep_duration') OmhUnitValueDto? sleepDuration,
+    @JsonKey(name: 'total_sleep_time') OmhUnitValueDto? totalSleepTime,
+    @JsonKey(name: 'light_sleep_duration') OmhUnitValueDto? lightSleepDuration,
+    @JsonKey(name: 'deep_sleep_duration') OmhUnitValueDto? deepSleepDuration,
+    @JsonKey(name: 'rem_sleep_duration') OmhUnitValueDto? remSleepDuration,
+    @JsonKey(name: 'base_movement_quantity')
+    OmhUnitValueDto? baseMovementQuantity,
   }) = _OmhBodyDto;
 
   factory OmhBodyDto.fromJson(Map<String, dynamic> json) =>

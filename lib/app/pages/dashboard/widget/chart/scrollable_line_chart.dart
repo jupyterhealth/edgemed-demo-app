@@ -21,6 +21,10 @@ class ScrollableLineChart<T> extends StatefulWidget {
     int seriesStartIndex,
   )?
   buildBetweenBars;
+  final VoidCallback? onReachOlderData;
+  final double minYInterval;
+  final bool yFromZero;
+  final String Function(double value)? formatY;
 
   const ScrollableLineChart({
     super.key,
@@ -32,6 +36,10 @@ class ScrollableLineChart<T> extends StatefulWidget {
     required this.onPointSelected,
     required this.buildSeries,
     this.buildBetweenBars,
+    this.onReachOlderData,
+    this.minYInterval = ChartAxis.yInterval,
+    this.yFromZero = false,
+    this.formatY,
   });
 
   @override
@@ -53,16 +61,20 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   double? _windowStart;
   bool _isScrolling = false;
   bool _isSnapping = false;
+  bool _didRequestOlderData = false;
   double _panAccumulatedDx = 0;
   double? _panChartX;
   Offset? _lastDragLocalPosition;
-  double _flingMaxWindowStart = 0;
   late final AnimationController _flingController;
 
   double get _visibleMinutes =>
       ChartAxis.visibleMinutes(isHourly: widget.isHourly);
 
   double get _snapInterval => ChartAxis.snapInterval(isHourly: widget.isHourly);
+
+  double get _maxWindowStart => widget.dataMaxX - _visibleMinutes;
+
+  double get _minWindowStart => math.min(0.0, _maxWindowStart);
 
   @override
   void initState() {
@@ -84,12 +96,39 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
       _windowStart = null;
       _selectedX = null;
       _isScrolling = false;
+      _didRequestOlderData = false;
       _panAccumulatedDx = 0;
       _panChartX = null;
       _lastDragLocalPosition = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _selectLatest();
+      });
+      return;
+    }
+
+    if (oldWidget.origin != widget.origin) {
+      final deltaMinutes = widget.origin
+          .difference(oldWidget.origin)
+          .inMinutes
+          .toDouble();
+      if (deltaMinutes != 0) {
+        if (_windowStart != null) {
+          _windowStart = _windowStart! - deltaMinutes;
+        }
+        if (_selectedX != null) {
+          _selectedX = _selectedX! - deltaMinutes;
+        }
+      }
+    }
+
+    if (oldWidget.origin != widget.origin ||
+        oldWidget.dataMaxX != widget.dataMaxX ||
+        oldWidget.selectablePoints.length != widget.selectablePoints.length) {
+      _didRequestOlderData = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _maybeRequestOlderData();
       });
     }
   }
@@ -101,6 +140,21 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
     final latest = points.last;
     setState(() => _selectedX = latest.x);
     widget.onPointSelected(latest.data);
+    _maybeRequestOlderData();
+  }
+
+  void _maybeRequestOlderData() {
+    if (widget.onReachOlderData == null) return;
+
+    final start = _windowStart ?? _maxWindowStart;
+    if (start > _visibleMinutes * 0.25) {
+      _didRequestOlderData = false;
+      return;
+    }
+
+    if (_didRequestOlderData) return;
+    _didRequestOlderData = true;
+    widget.onReachOlderData!();
   }
 
   @override
@@ -113,10 +167,11 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
     if (!_flingController.isAnimating) return;
 
     final raw = _flingController.value;
-    final clamped = raw.clamp(0.0, _flingMaxWindowStart);
+    final clamped = raw.clamp(_minWindowStart, _maxWindowStart);
     if (_windowStart != clamped) {
       setState(() => _windowStart = clamped);
     }
+    _maybeRequestOlderData();
 
     if (_isSnapping) return;
 
@@ -146,9 +201,9 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   }
 
   void _snapWindow() {
-    final currentStart = _windowStart ?? _flingMaxWindowStart;
+    final currentStart = _windowStart ?? _maxWindowStart;
     final snapped = ((currentStart / _snapInterval).round() * _snapInterval)
-        .clamp(0.0, _flingMaxWindowStart);
+        .clamp(_minWindowStart, _maxWindowStart);
     if ((currentStart - snapped).abs() < 0.01) {
       if (_windowStart != snapped) {
         setState(() => _windowStart = snapped);
@@ -167,12 +222,9 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
 
   void _startFling({
     required double velocityPxPerSec,
-    required double chartMaxX,
     required double minutesPerPixel,
   }) {
-    final maxWindowStart = math.max(0.0, chartMaxX - _visibleMinutes);
-    _flingMaxWindowStart = maxWindowStart;
-    final currentStart = _windowStart ?? maxWindowStart;
+    final currentStart = _windowStart ?? _maxWindowStart;
 
     if (velocityPxPerSec.abs() < _minFlingVelocityPx) {
       _snapWindow();
@@ -186,11 +238,19 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
     );
   }
 
-  ({double x, T data}) _nearestSelectablePoint(double x) =>
-      widget.selectablePoints.reduce(
-        (best, point) =>
-            (point.x - x).abs() < (best.x - x).abs() ? point : best,
-      );
+  ({double x, T data}) _nearestSelectablePoint(double x) {
+    final targetBucket = ChartAxis.bucketX(x, isHourly: widget.isHourly);
+    return widget.selectablePoints.reduce((best, point) {
+      final pointBucket = ChartAxis.bucketX(point.x, isHourly: widget.isHourly);
+      final bestBucket = ChartAxis.bucketX(best.x, isHourly: widget.isHourly);
+      final pointDist = (pointBucket - targetBucket).abs();
+      final bestDist = (bestBucket - targetBucket).abs();
+      if (pointDist != bestDist) {
+        return pointDist < bestDist ? point : best;
+      }
+      return (point.x - x).abs() < (best.x - x).abs() ? point : best;
+    });
+  }
 
   void _selectNearestAtChartX(double chartX) {
     if (widget.selectablePoints.isEmpty) return;
@@ -205,7 +265,6 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   void _onTouch({
     required FlTouchEvent event,
     required LineTouchResponse? response,
-    required double chartMaxX,
     required double minutesPerPixel,
   }) {
     if (event is FlPanStartEvent || event is FlLongPressStart) {
@@ -232,15 +291,14 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
       }
 
       if (_isScrolling) {
-        final maxWindowStart = math.max(0.0, chartMaxX - _visibleMinutes);
-        _flingMaxWindowStart = maxWindowStart;
-        final currentStart = _windowStart ?? maxWindowStart;
+        final currentStart = _windowStart ?? _maxWindowStart;
         setState(() {
           _windowStart = (currentStart - dx * minutesPerPixel).clamp(
-            0.0,
-            maxWindowStart,
+            _minWindowStart,
+            _maxWindowStart,
           );
         });
+        _maybeRequestOlderData();
         return;
       }
 
@@ -255,7 +313,6 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
             : (event as FlLongPressEnd).details.velocity.pixelsPerSecond.dx;
         _startFling(
           velocityPxPerSec: velocityPxPerSec,
-          chartMaxX: chartMaxX,
           minutesPerPixel: minutesPerPixel,
         );
       } else if (_panChartX != null) {
@@ -285,14 +342,16 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
       return const SizedBox.shrink();
     }
 
-    final chartMaxX = math.max(widget.dataMaxX, _visibleMinutes);
-    final maxWindowStart = math.max(0.0, chartMaxX - _visibleMinutes);
-    final windowStart = (_windowStart ?? maxWindowStart).clamp(
-      0.0,
-      maxWindowStart,
+    final windowStart = (_windowStart ?? _maxWindowStart).clamp(
+      _minWindowStart,
+      _maxWindowStart,
     );
     final highlightedX = _selectedX ?? selectablePoints.last.x;
-    final yBounds = ChartAxis.yBounds(widget.yValues);
+    final yBounds = ChartAxis.yBounds(
+      widget.yValues,
+      minInterval: widget.minYInterval,
+      fromZero: widget.yFromZero,
+    );
 
     return SizedBox(
       height: ChartAxis.height,
@@ -324,7 +383,6 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
                 touchCallback: (event, response) => _onTouch(
                   event: event,
                   response: response,
-                  chartMaxX: chartMaxX,
                   minutesPerPixel: minutesPerPixel,
                 ),
                 getTouchedSpotIndicator: (barData, spotIndexes) => spotIndexes
@@ -361,6 +419,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
                   sideTitles: ChartAxis.leftTitles(
                     context,
                     interval: yBounds.interval,
+                    format: widget.formatY,
                   ),
                 ),
               ),

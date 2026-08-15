@@ -11,12 +11,14 @@ class GlucoseChart extends StatelessWidget {
   final List<Observation> observations;
   final bool isHourly;
   final void Function(Observation observation) onObservationSelected;
+  final VoidCallback? onLoadMore;
 
   const GlucoseChart({
     super.key,
     required this.observations,
     required this.isHourly,
     required this.onObservationSelected,
+    this.onLoadMore,
   });
 
   @override
@@ -57,6 +59,7 @@ class GlucoseChart extends StatelessWidget {
           (x: point.spot.x, data: point.observation),
       ],
       onPointSelected: onObservationSelected,
+      onReachOlderData: onLoadMore,
       buildSeries: (chartContext) => [
         _glucoseSeries(spots: spots, chartContext: chartContext),
       ],

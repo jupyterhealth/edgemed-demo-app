@@ -10,11 +10,13 @@ import 'package:jupyter_health/domain/entity/observations/observation_data.dart'
 class StepsChart extends StatelessWidget {
   final List<Observation> observations;
   final void Function(Observation observation) onObservationSelected;
+  final VoidCallback? onLoadMore;
 
   const StepsChart({
     super.key,
     required this.observations,
     required this.onObservationSelected,
+    this.onLoadMore,
   });
 
   @override
@@ -45,6 +47,7 @@ class StepsChart extends StatelessWidget {
           (x: point.spot.x, data: point.observation),
       ],
       onPointSelected: onObservationSelected,
+      onReachOlderData: onLoadMore,
       buildSeries: (chartContext) => [
         _stepsSeries(spots: spots, chartContext: chartContext),
       ],

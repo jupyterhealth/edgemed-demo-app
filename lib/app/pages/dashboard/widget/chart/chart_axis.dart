@@ -27,6 +27,11 @@ abstract final class ChartAxis {
   static double snapInterval({required bool isHourly}) =>
       isHourly ? minutesPerHour : minutesPerDay;
 
+  static double bucketX(double x, {required bool isHourly}) {
+    final interval = snapInterval(isHourly: isHourly);
+    return (x / interval).round() * interval;
+  }
+
   static DateTime chartOrigin({
     required DateTime firstDate,
     required bool isHourly,
@@ -42,16 +47,19 @@ abstract final class ChartAxis {
     return DateTime(firstDate.year, firstDate.month, firstDate.day);
   }
 
-  static double resolveYInterval(Iterable<double> values) {
+  static double resolveYInterval(
+    Iterable<double> values, {
+    double minInterval = yInterval,
+  }) {
     final minValue = values.reduce((a, b) => a < b ? a : b);
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    final span = math.max(maxValue - minValue, yInterval);
-    final nice = _niceNumber(span / (leftTitleCount - 1));
-    return math.max(nice, yInterval);
+    final span = math.max(maxValue - minValue, minInterval);
+    final nice = _niceNumber(span / (leftTitleCount - 1), minInterval);
+    return math.max(nice, minInterval);
   }
 
-  static double _niceNumber(double value) {
-    if (value <= 0) return yInterval;
+  static double _niceNumber(double value, [double minInterval = yInterval]) {
+    if (value <= 0) return minInterval;
     final exp = (math.log(value) / math.ln10).floor();
     final fraction = value / math.pow(10, exp);
     final niceFraction = fraction <= 1
@@ -65,12 +73,26 @@ abstract final class ChartAxis {
   }
 
   static ({double minY, double maxY, double interval}) yBounds(
-    Iterable<double> values,
-  ) {
-    final minValue = values.reduce((a, b) => a < b ? a : b);
+    Iterable<double> values, {
+    double minInterval = yInterval,
+    bool fromZero = false,
+  }) {
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    final interval = resolveYInterval(values);
+    final interval = resolveYInterval(
+      fromZero ? [0.0, maxValue] : values,
+      minInterval: minInterval,
+    );
     final range = interval * (leftTitleCount - 1);
+
+    if (fromZero) {
+      var maxY = range;
+      if (maxValue > maxY) {
+        maxY = (maxValue / interval).ceil() * interval;
+      }
+      return (minY: 0, maxY: maxY, interval: interval);
+    }
+
+    final minValue = values.reduce((a, b) => a < b ? a : b);
     final mid = (minValue + maxValue) / 2;
 
     var minY = ((mid - range / 2) / interval).round() * interval;
@@ -96,6 +118,7 @@ abstract final class ChartAxis {
   static SideTitles leftTitles(
     BuildContext context, {
     required double interval,
+    String Function(double value)? format,
   }) => SideTitles(
     showTitles: true,
     reservedSize: leftTitlesSize,
@@ -106,7 +129,7 @@ abstract final class ChartAxis {
       child: SizedBox(
         width: leftTitlesSize,
         child: Text(
-          _yLabel(value),
+          (format ?? _yLabel)(value),
           textAlign: TextAlign.left,
           style: context.typography.bodySmall.copyWith(
             color: context.theme.textTertiary,
@@ -134,7 +157,7 @@ abstract final class ChartAxis {
     required double selectedX,
   }) {
     final interval = snapInterval(isHourly: isHourly);
-    final selectedBucket = (selectedX / interval).floor() * interval;
+    final selectedBucket = bucketX(selectedX, isHourly: isHourly);
 
     return SideTitles(
       showTitles: true,
@@ -153,7 +176,7 @@ abstract final class ChartAxis {
             isHourly ? hourLabel(date) : dayLabel(date),
             style: context.typography.bodySmall.copyWith(
               color: context.theme.textTertiary,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              fontWeight: isSelected ? FontWeight.w700 : null,
             ),
           ),
         );
