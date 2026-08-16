@@ -1,8 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+import 'package:jupyter_health/config/env/env.dart';
 import 'package:jupyter_health/data/data_source/api_data_source_impl.dart';
+import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
 import 'package:jupyter_health/data/utils/api_helpers.dart';
+import 'package:jupyter_health/domain/entity/consents/consent_item.dart';
+import 'package:jupyter_health/domain/entity/consents/patient_consents.dart';
 import 'package:jupyter_health/domain/entity/failure.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_page.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
@@ -26,11 +30,37 @@ class ApiRepositoryImpl implements ApiRepository {
   );
 
   @override
+  Future<Either<Failure, PatientConsents>> getPatientConsents({
+    required int patientId,
+  }) => safeApiCall(
+    apiCall: () async {
+      final response = await _apiDataSource.getPatientConsents(
+        patientId: patientId,
+      );
+      return response.data.toDomain();
+    },
+  );
+
+  @override
+  Future<Either<Failure, Unit>> submitPatientConsents({
+    required int patientId,
+    required List<ConsentItem> items,
+  }) => safeApiCall(
+    apiCall: () async {
+      await _apiDataSource.submitPatientConsents(
+        patientId: patientId,
+        body: SubmitConsentsRequestDto.fromConsentItems(items),
+      );
+      return unit;
+    },
+  );
+
+  @override
   Future<Either<Failure, ObservationPage>> getObservations({
     required ObservationType type,
     Map<String, String>? nextUrls,
-  }) {
-    return safeApiCall(
+  }) async {
+    return await safeApiCall(
       apiCall: () async {
         final sources = nextUrls != null
             ? Map<String, String?>.of(nextUrls)
@@ -39,7 +69,7 @@ class ApiRepositoryImpl implements ApiRepository {
               };
         if (sources.isEmpty) return const ObservationPage();
 
-        return _fetchFeeds(sources);
+        return await _fetchFeeds(sources);
       },
     );
   }
@@ -83,7 +113,9 @@ class ApiRepositoryImpl implements ApiRepository {
               date: _observationDateRange,
               count: _pageSize,
             )
-          : await _apiDataSource.getObservationsByUrl(url!);
+          : await _apiDataSource.getObservationsByUrl(
+              _trustedPaginationUrl(url!),
+            );
       useSearch = false;
 
       final page = response.data.toPage(code: code);
@@ -112,5 +144,23 @@ class ApiRepositoryImpl implements ApiRepository {
   List<String> get _observationDateRange {
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now().toUtc());
     return ['ge$_observationsFrom', 'le$today'];
+  }
+
+  String _trustedPaginationUrl(String url) {
+    final base = Uri.tryParse(Env.apiBaseUrl);
+    if (base == null || base.scheme != 'https') {
+      throw ArgumentError.value(url, 'url', 'Untrusted pagination URL');
+    }
+
+    final parsed = Uri.tryParse(url);
+    if (parsed == null) {
+      throw ArgumentError.value(url, 'url', 'Untrusted pagination URL');
+    }
+
+    final resolved = parsed.hasScheme ? parsed : base.resolveUri(parsed);
+    if (resolved.scheme != 'https' || resolved.origin != base.origin) {
+      throw ArgumentError.value(url, 'url', 'Untrusted pagination URL');
+    }
+    return resolved.toString();
   }
 }

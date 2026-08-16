@@ -15,11 +15,11 @@ class AppStartupPage extends StatelessWidget {
       value: getIt<AuthCubit>()..fetchUser(),
       child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          state.whenOrNull(
-            authenticated: (user) {
+          state.mapOrNull(
+            authenticated: (value) {
               context.router.replace(const WelcomeRoute());
             },
-            unauthenticated: () {
+            unauthenticated: (_) {
               print('unauthenticated');
             },
           );

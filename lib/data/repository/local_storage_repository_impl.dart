@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
-enum _Key { languageCode, encryptionKey, accessToken }
+enum _Key { languageCode, encryptionKey, accessToken, refreshToken }
 
 @LazySingleton(as: LocalStorageRepository)
 class LocalStorageRepositoryImpl implements LocalStorageRepository {
@@ -18,7 +18,6 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   @override
   Future<void> init() async {
     await Hive.initFlutter();
-    // Hive.registerAdapters();
     _secureStorage = FlutterSecureStorage();
     _box = await _openEncryptedBox();
   }
@@ -68,6 +67,7 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   Future<void> setLocale(Locale locale) async =>
       _box.put(_Key.languageCode.name, locale.languageCode);
 
+  // Secure Storage
   @override
   Future<String?> getAccessToken() async =>
       await _secureStorage.read(key: _Key.accessToken.name);
@@ -75,4 +75,15 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   @override
   Future<void> setAccessToken(String accessToken) async => await _secureStorage
       .write(key: _Key.accessToken.name, value: accessToken);
+
+  @override
+  Future<String?> getRefreshToken() async =>
+      await _secureStorage.read(key: _Key.refreshToken.name);
+
+  @override
+  Future<void> setRefreshToken(String refreshToken) async =>
+      await _secureStorage.write(
+        key: _Key.refreshToken.name,
+        value: refreshToken,
+      );
 }

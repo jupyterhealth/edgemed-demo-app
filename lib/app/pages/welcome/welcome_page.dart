@@ -42,7 +42,8 @@ class WelcomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Button(
               text: 'Get Started',
-              onPressed: () => context.router.replace(const DashboardRoute()),
+              onPressed: () =>
+                  context.router.replace(const PrivacyTermsPermissionsRoute()),
             ),
           ),
         ],
