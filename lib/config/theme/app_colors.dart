@@ -14,6 +14,7 @@ abstract final class AppColors {
 
   static const backgroundSecondary = Color(0xFFF4F6F9);
   static const border = Color(0xFFC5CCD8);
+  static const borderDark = Color(0xFF495260);
   static const disabled = Color(0xFFDBDFE6);
   static const error = Color(0xFFC30D49);
 }
@@ -29,6 +30,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
   final Color textTertiary;
   final Color backgroundSecondary;
   final Color border;
+  final Color borderDark;
   final Color disabled;
   final Color error;
   final Color surface;
@@ -45,6 +47,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     required this.textTertiary,
     required this.backgroundSecondary,
     required this.border,
+    required this.borderDark,
     required this.disabled,
     required this.error,
   });
@@ -60,6 +63,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     textTertiary: AppColors.textTertiary,
     backgroundSecondary: AppColors.backgroundSecondary,
     border: AppColors.border,
+    borderDark: AppColors.borderDark,
     disabled: AppColors.disabled,
     error: AppColors.error,
     surface: AppColors.white,
@@ -77,6 +81,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     Color? textTertiary,
     Color? backgroundSecondary,
     Color? border,
+    Color? borderDark,
     Color? disabled,
     Color? error,
     Color? surface,
@@ -91,6 +96,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     textTertiary: textTertiary ?? this.textTertiary,
     backgroundSecondary: backgroundSecondary ?? this.backgroundSecondary,
     border: border ?? this.border,
+    borderDark: borderDark ?? this.borderDark,
     disabled: disabled ?? this.disabled,
     error: error ?? this.error,
     surface: surface ?? this.surface,
