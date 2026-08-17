@@ -34,10 +34,10 @@ android {
         }
 
         create("stagingRelease") {
-            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
-            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
+            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_ALIAS")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_PRIVATE_KEY_PASSWORD")
             storeFile = file(System.getenv("HOME") + "/keystores/staging.keystore")
-            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_PASSWORD")
         }        
         create("preprodRelease") {
             keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PREPROD_ALIAS")
@@ -46,10 +46,10 @@ android {
             storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PREPROD_PASSWORD")
         }
         create("prodRelease") {
-            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PROD_ALIAS")
-            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PROD_PRIVATE_KEY_PASSWORD")
+            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PPRIVATE_KEY_PASSWORD")
             storeFile = file(System.getenv("HOME") + "/keystores/prod.keystore")
-            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PROD_PASSWORD")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRASSWORD")
         } 
     }    
 
