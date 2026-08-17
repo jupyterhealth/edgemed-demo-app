@@ -2,11 +2,13 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.jupyter_health"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.jupyter.health"
+
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -15,15 +17,41 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.jupyter_health"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        applicationId = "com.jupyter.health"
+        minSdk = 29
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+
+    signingConfigs {
+        getByName("debug") {
+            // TODO Uncomment and specify you debug key if needed
+            // keyAlias = "androiddebugkey"
+            // keyPassword = "android"
+            // storeFile = file("keystore/debug.keystore")
+            // storePassword = "android"
+        }
+
+        create("stagingRelease") {
+            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_ALIAS")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_PRIVATE_KEY_PASSWORD")
+            storeFile = file(System.getenv("HOME") + "/keystores/staging.keystore")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_STAGING_PASSWORD")
+        }        
+        create("preprodRelease") {
+            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PREPROD_ALIAS")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PREPROD_PRIVATE_KEY_PASSWORD")
+            storeFile = file(System.getenv("HOME") + "/keystores/preprod.keystore")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PREPROD_PASSWORD")
+        }
+        create("prodRelease") {
+            keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PPRIVATE_KEY_PASSWORD")
+            storeFile = file(System.getenv("HOME") + "/keystores/prod.keystore")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRASSWORD")
+        } 
+    }    
 
     flavorDimensions += "env"
 
@@ -31,20 +59,21 @@ android {
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".staging"
+            signingConfig = signingConfigs.getByName("stagingRelease")
         }
         create("preprod") {
             dimension = "env"
             applicationIdSuffix = ".preprod"
+            signingConfig = signingConfigs.getByName("preprodRelease")
         }
         create("prod") {
             dimension = "env"
+            signingConfig = signingConfigs.getByName("prodRelease")
         }
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        getByName("debug") {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -54,6 +83,10 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
+}
+
+dependencies {
+  implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
 }
 
 flutter {
