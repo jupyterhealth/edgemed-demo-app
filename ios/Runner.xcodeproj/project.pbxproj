@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -91,16 +91,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E5515192302F1A300043C6DA /* Exceptions for "config" folder in "Runner" target */ = {
+		E5515192302F1A300043C6DA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"preprod/GoogleService-Info.plist",
+				"prod/GoogleService-Info.plist",
 				"staging/GoogleService-Info.plist",
 			);
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 		};
-		E5515193302F1A300043C6DA /* Exceptions for "config" folder in "RunnerTests" target */ = {
+		E5515193302F1A300043C6DA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"preprod/GoogleService-Info.plist",
+				"prod/GoogleService-Info.plist",
 				"staging/GoogleService-Info.plist",
 			);
 			target = 331C8080294A63A400263BE5 /* RunnerTests */;
@@ -108,19 +112,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E551518D302F19F30043C6DA /* config */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E5515192302F1A300043C6DA /* Exceptions for "config" folder in "Runner" target */,
-				E5515193302F1A300043C6DA /* Exceptions for "config" folder in "RunnerTests" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
+		E551518D302F19F30043C6DA /* config */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E5515192302F1A300043C6DA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, E5515193302F1A300043C6DA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = config; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -321,7 +313,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -453,9 +445,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1717,7 +1713,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};
