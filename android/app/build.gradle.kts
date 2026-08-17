@@ -47,9 +47,9 @@ android {
         }
         create("prodRelease") {
             keyAlias = System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS")
-            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PPRIVATE_KEY_PASSWORD")
+            keyPassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD")
             storeFile = file(System.getenv("HOME") + "/keystores/prod.keystore")
-            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRASSWORD")
+            storePassword = System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD")
         } 
     }    
 
@@ -87,6 +87,8 @@ kotlin {
 
 dependencies {
   implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+  // AGP 9 R8 full mode: older work-runtime lacks consumer rules for WorkDatabase_Impl.
+  implementation("androidx.work:work-runtime:2.11.1")
 }
 
 flutter {
