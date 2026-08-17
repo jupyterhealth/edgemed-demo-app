@@ -7,9 +7,7 @@ import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 abstract final class ChartAxis {
   static const height = 156.0;
-  static const yInterval = 20.0;
   static const leftTitleCount = 6;
-  static const yRange = yInterval * (leftTitleCount - 1);
   static const hourlyBottomLabelCount = 8;
   static const dailyBottomLabelCount = 7;
   static const visibleHours = hourlyBottomLabelCount - 1;
@@ -19,6 +17,7 @@ abstract final class ChartAxis {
   static const leftTitlesSize = 28.0;
   static const bottomTitlesSize = 32.0;
   static const dotPaddingPx = 18.0;
+  static const _yPadding = 0.12;
   static const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   static double visibleMinutes({required bool isHourly}) =>
@@ -47,25 +46,16 @@ abstract final class ChartAxis {
     return DateTime(firstDate.year, firstDate.month, firstDate.day);
   }
 
-  static double resolveYInterval(
-    Iterable<double> values, {
-    double minInterval = yInterval,
-  }) {
-    final minValue = values.reduce((a, b) => a < b ? a : b);
-    final maxValue = values.reduce((a, b) => a > b ? a : b);
-    final span = math.max(maxValue - minValue, minInterval);
-    final nice = _niceNumber(span / (leftTitleCount - 1), minInterval);
-    return math.max(nice, minInterval);
-  }
-
-  static double _niceNumber(double value, [double minInterval = yInterval]) {
-    if (value <= 0) return minInterval;
+  static double _niceNumber(double value) {
+    if (value <= 0) return 1;
     final exp = (math.log(value) / math.ln10).floor();
     final fraction = value / math.pow(10, exp);
     final niceFraction = fraction <= 1
         ? 1.0
         : fraction <= 2
         ? 2.0
+        : fraction <= 2.5
+        ? 2.5
         : fraction <= 5
         ? 5.0
         : 10.0;
@@ -74,45 +64,67 @@ abstract final class ChartAxis {
 
   static ({double minY, double maxY, double interval}) yBounds(
     Iterable<double> values, {
-    double minInterval = yInterval,
+    double minInterval = 1,
     bool fromZero = false,
   }) {
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    final interval = resolveYInterval(
-      fromZero ? [0.0, maxValue] : values,
-      minInterval: minInterval,
-    );
-    final range = interval * (leftTitleCount - 1);
+    final minValue = fromZero ? 0.0 : values.reduce((a, b) => a < b ? a : b);
+    final span = math.max(maxValue - minValue, minInterval);
+    final paddedMin = fromZero ? 0.0 : minValue - span * _yPadding;
+    final paddedMax = maxValue + span * _yPadding;
+    final paddedSpan = math.max(paddedMax - paddedMin, minInterval);
+    final interval = niceYInterval(paddedSpan, minInterval: minInterval);
+    final targetRange = interval * (leftTitleCount - 1);
 
-    if (fromZero) {
-      var maxY = range;
-      if (maxValue > maxY) {
-        maxY = (maxValue / interval).ceil() * interval;
+    var minY = fromZero ? 0.0 : (paddedMin / interval).floor() * interval;
+    if (minY < 0 && minValue >= 0) minY = 0;
+
+    var maxY = (paddedMax / interval).ceil() * interval;
+    if (maxY - minY < targetRange) {
+      if (fromZero) {
+        maxY = minY + targetRange;
+      } else {
+        final extra = targetRange - (maxY - minY);
+        minY -= (extra / 2 / interval).ceil() * interval;
+        if (minY < 0 && minValue >= 0) minY = 0;
+        maxY = minY + targetRange;
       }
-      return (minY: 0, maxY: maxY, interval: interval);
     }
 
-    final minValue = values.reduce((a, b) => a < b ? a : b);
-    final mid = (minValue + maxValue) / 2;
-
-    var minY = ((mid - range / 2) / interval).round() * interval;
-    var maxY = minY + range;
-
-    if (minValue < minY) {
-      minY = (minValue / interval).floor() * interval;
-      maxY = minY + range;
-    }
-    if (maxValue > maxY) {
-      maxY = (maxValue / interval).ceil() * interval;
-      minY = maxY - range;
-    }
-
-    if (minY < 0) {
-      minY = 0;
-      maxY = range;
+    if (paddedMax > maxY) {
+      maxY = (paddedMax / interval).ceil() * interval;
     }
 
     return (minY: minY, maxY: maxY, interval: interval);
+  }
+
+  static double niceYInterval(double span, {double minInterval = 1}) =>
+      math.max(
+        _niceNumber(math.max(span, minInterval) / (leftTitleCount - 1)),
+        minInterval,
+      );
+
+  static bool isOnYInterval(double value, double interval) {
+    if (interval <= 0) return true;
+    final scaled = value / interval;
+    return (scaled - scaled.round()).abs() < 0.001;
+  }
+
+  static List<double> yTicks({
+    required double minY,
+    required double maxY,
+    required double interval,
+  }) {
+    if (interval <= 0 || maxY < minY) return [minY];
+    final epsilon = interval * 1e-6;
+    var y = (minY / interval).floor() * interval;
+    if (y < minY - epsilon) y += interval;
+    final ticks = <double>[];
+    while (y <= maxY + epsilon) {
+      ticks.add(y);
+      y += interval;
+    }
+    return ticks.isEmpty ? [minY] : ticks;
   }
 
   static SideTitles leftTitles(
@@ -123,20 +135,25 @@ abstract final class ChartAxis {
     showTitles: true,
     reservedSize: leftTitlesSize,
     interval: interval,
-    getTitlesWidget: (value, meta) => SideTitleWidget(
-      meta: meta,
-      space: 0,
-      child: SizedBox(
-        width: leftTitlesSize,
-        child: Text(
-          (format ?? _yLabel)(value),
-          textAlign: TextAlign.left,
-          style: context.typography.bodySmall.copyWith(
-            color: context.theme.textTertiary,
+    getTitlesWidget: (value, meta) {
+      if (!isOnYInterval(value, interval)) {
+        return const SizedBox.shrink();
+      }
+      return SideTitleWidget(
+        meta: meta,
+        space: 0,
+        child: SizedBox(
+          width: leftTitlesSize,
+          child: Text(
+            (format ?? _yLabel)(value),
+            textAlign: TextAlign.left,
+            style: context.typography.bodySmall.copyWith(
+              color: context.theme.textTertiary,
+            ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 
   static String _yLabel(double value) {
@@ -147,7 +164,10 @@ abstract final class ChartAxis {
           : thousands.toStringAsFixed(1);
       return '${text}k';
     }
-    return value.toStringAsFixed(0);
+    if (value == value.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
+    return value.toStringAsFixed(1);
   }
 
   static SideTitles bottomTitles({
@@ -198,13 +218,14 @@ abstract final class ChartAxis {
     required double windowStart,
     required double visibleMinutes,
     required double minY,
+    required double maxY,
     required double interval,
   }) => [
-    for (var i = 0; i < leftTitleCount; i++)
+    for (final y in yTicks(minY: minY, maxY: maxY, interval: interval))
       LineChartBarData(
         spots: [
-          FlSpot(windowStart, minY + i * interval),
-          FlSpot(windowStart + visibleMinutes, minY + i * interval),
+          FlSpot(windowStart, y),
+          FlSpot(windowStart + visibleMinutes, y),
         ],
         color: colors.border,
         barWidth: 1,

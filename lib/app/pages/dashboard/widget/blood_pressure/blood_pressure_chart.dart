@@ -65,10 +65,7 @@ class BloodPressureChart extends StatelessWidget {
       isHourly: isHourly,
       origin: origin,
       dataMaxX: systolicSpots.last.x,
-      yValues: [
-        for (final spot in systolicSpots) spot.y,
-        for (final spot in diastolicSpots) spot.y,
-      ],
+      ySpots: [...systolicSpots, ...diastolicSpots],
       selectablePoints: [
         for (final point in selectablePoints)
           (x: point.systolicSpot.x, data: point.observation),

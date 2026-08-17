@@ -26,7 +26,6 @@ class SleepChart extends StatelessWidget {
   static const lightSleepColor = Color(0xFF8E919D);
   static const _barWidthPx = 14.0;
   static const _segmentGapPx = 4.0;
-  static const _scaleHours = 8.0;
 
   final List<Observation> observations;
   final void Function(Observation observation) onObservationSelected;
@@ -102,7 +101,7 @@ class SleepChart extends StatelessWidget {
       yFromZero: true,
       minYInterval: 1,
       formatY: hourAxisLabel,
-      yValues: [for (final spot in spots) spot.y, _scaleHours],
+      ySpots: spots,
       selectablePoints: [
         for (final point in selectablePoints)
           (x: point.spot.x, data: point.observation),
