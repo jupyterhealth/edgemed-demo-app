@@ -57,6 +57,10 @@ flutter_gen:
 flutter:
   generate: true
   uses-material-design: true
+  config:
+    # Firebase plugins require iOS 15. Flutter's generated SwiftPM package
+    # hardcodes 13.0 and that value is what Xcode archive validates.
+    enable-swift-package-manager: false
   assets:
     - assets/images/
     - assets/images/svg/
