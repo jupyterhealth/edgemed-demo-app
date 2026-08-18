@@ -87,11 +87,45 @@
 		E68373B361C16716EB9CF7CA /* Pods-Runner.profile-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-prod.xcconfig"; sourceTree = "<group>"; };
 		ECCEF8929BAAFD2873A7A1E6 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		F39F14DAF2070E28806B262A /* Pods-RunnerTests.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release-prod.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release-prod.xcconfig"; sourceTree = "<group>"; };
-		E551518E302F19F30043C6DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		E551518F302F19F30043C6DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		E5515190302F19F30043C6DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F82BA82B5372F41A17C1C82E /* Pods-Runner.profile-staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-staging.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-staging.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E5515192302F1A300043C6DA /* Exceptions for "config" folder in "Runner" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"preprod/GoogleService-Info.plist",
+				"prod/GoogleService-Info.plist",
+				"staging/GoogleService-Info.plist",
+			);
+			target = 97C146ED1CF9000F007C117D /* Runner */;
+		};
+		E5515193302F1A300043C6DA /* Exceptions for "config" folder in "RunnerTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"preprod/GoogleService-Info.plist",
+				"prod/GoogleService-Info.plist",
+				"staging/GoogleService-Info.plist",
+			);
+			target = 331C8080294A63A400263BE5 /* RunnerTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E551518D302F19F30043C6DA /* config */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E5515192302F1A300043C6DA /* Exceptions for "config" folder in "Runner" target */,
+				E5515193302F1A300043C6DA /* Exceptions for "config" folder in "RunnerTests" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		903BAB07A2E9A03EE9E77D25 /* Frameworks */ = {
@@ -213,40 +247,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E551518D302F19F30043C6DA /* config */ = {
-			isa = PBXGroup;
-			children = (
-				E5515191302F19F30043C6DA /* staging */,
-				E5515194302F19F30043C6DA /* preprod */,
-				E5515195302F19F30043C6DA /* prod */,
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		E5515191302F19F30043C6DA /* staging */ = {
-			isa = PBXGroup;
-			children = (
-				E551518E302F19F30043C6DA /* GoogleService-Info.plist */,
-			);
-			path = staging;
-			sourceTree = "<group>";
-		};
-		E5515194302F19F30043C6DA /* preprod */ = {
-			isa = PBXGroup;
-			children = (
-				E551518F302F19F30043C6DA /* GoogleService-Info.plist */,
-			);
-			path = preprod;
-			sourceTree = "<group>";
-		};
-		E5515195302F19F30043C6DA /* prod */ = {
-			isa = PBXGroup;
-			children = (
-				E5515190302F19F30043C6DA /* GoogleService-Info.plist */,
-			);
-			path = prod;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -263,6 +263,9 @@
 			);
 			dependencies = (
 				331C8086294A63A400263BE5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E551518D302F19F30043C6DA /* config */,
 			);
 			name = RunnerTests;
 			productName = RunnerTests;
@@ -286,6 +289,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E551518D302F19F30043C6DA /* config */,
 			);
 			name = Runner;
 			packageProductDependencies = (
