@@ -11,7 +11,7 @@ class ScrollableLineChart<T> extends StatefulWidget {
   final bool isHourly;
   final DateTime origin;
   final double dataMaxX;
-  final List<double> yValues;
+  final List<FlSpot> ySpots;
   final List<({double x, T data})> selectablePoints;
   final ValueChanged<T> onPointSelected;
   final List<LineChartBarData> Function(ScrollableChartContext context)
@@ -31,13 +31,13 @@ class ScrollableLineChart<T> extends StatefulWidget {
     required this.isHourly,
     required this.origin,
     required this.dataMaxX,
-    required this.yValues,
+    required this.ySpots,
     required this.selectablePoints,
     required this.onPointSelected,
     required this.buildSeries,
     this.buildBetweenBars,
     this.onReachOlderData,
-    this.minYInterval = ChartAxis.yInterval,
+    this.minYInterval = 1,
     this.yFromZero = false,
     this.formatY,
   });
@@ -56,6 +56,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   /// Minutes/sec — below this the fling is treated as done and we snap.
   static const _flingSnapVelocity = 55.0;
   static const _snapDuration = Duration(milliseconds: 220);
+  static const _yDuration = Duration(milliseconds: 300);
 
   double? _selectedX;
   double? _windowStart;
@@ -65,6 +66,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   double _panAccumulatedDx = 0;
   double? _panChartX;
   Offset? _lastDragLocalPosition;
+  Tween<Offset>? _yRangeTween;
   late final AnimationController _flingController;
 
   double get _visibleMinutes =>
@@ -75,6 +77,18 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
   double get _maxWindowStart => widget.dataMaxX - _visibleMinutes;
 
   double get _minWindowStart => math.min(0.0, _maxWindowStart);
+
+  Iterable<double> _visibleYValues(double windowStart) {
+    final pad = _snapInterval;
+    final minX = windowStart - pad;
+    final maxX = windowStart + _visibleMinutes + pad;
+    final visible = [
+      for (final spot in widget.ySpots)
+        if (spot.x >= minX && spot.x <= maxX) spot.y,
+    ];
+    if (visible.isNotEmpty) return visible;
+    return [for (final spot in widget.ySpots) spot.y];
+  }
 
   @override
   void initState() {
@@ -100,6 +114,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
       _panAccumulatedDx = 0;
       _panChartX = null;
       _lastDragLocalPosition = null;
+      _yRangeTween = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _selectLatest();
@@ -338,7 +353,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
     final colors = context.theme;
     final selectablePoints = widget.selectablePoints;
 
-    if (selectablePoints.isEmpty || widget.yValues.isEmpty) {
+    if (selectablePoints.isEmpty || widget.ySpots.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -348,10 +363,15 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
     );
     final highlightedX = _selectedX ?? selectablePoints.last.x;
     final yBounds = ChartAxis.yBounds(
-      widget.yValues,
+      _visibleYValues(windowStart),
       minInterval: widget.minYInterval,
       fromZero: widget.yFromZero,
     );
+    final targetRange = Offset(yBounds.minY, yBounds.maxY);
+    final yTween = _yRangeTween;
+    if (yTween == null || yTween.end != targetRange) {
+      _yRangeTween = Tween(begin: yTween?.end ?? targetRange, end: targetRange);
+    }
 
     return SizedBox(
       height: ChartAxis.height,
@@ -362,91 +382,110 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
             constraints.maxWidth - ChartAxis.leftTitlesSize,
           );
           final minutesPerPixel = _visibleMinutes / plotWidth;
-          final chartContext = ScrollableChartContext(
-            colors: colors,
-            windowStart: windowStart,
-            visibleMinutes: _visibleMinutes,
-            highlightedX: highlightedX,
-            minutesPerPixel: minutesPerPixel,
-            minY: yBounds.minY,
-            maxY: yBounds.maxY,
-          );
           final xPadding = ChartAxis.dotPaddingPx * minutesPerPixel;
-          final seriesStartIndex = ChartAxis.leftTitleCount;
-          final series = widget.buildSeries(chartContext);
 
-          return LineChart(
-            LineChartData(
-              clipData: const FlClipData.all(),
-              lineTouchData: LineTouchData(
-                handleBuiltInTouches: true,
-                touchCallback: (event, response) => _onTouch(
-                  event: event,
-                  response: response,
-                  minutesPerPixel: minutesPerPixel,
-                ),
-                getTouchedSpotIndicator: (barData, spotIndexes) => spotIndexes
-                    .map(
-                      (index) => TouchedSpotIndicatorData(
-                        const FlLine(color: Colors.transparent),
-                        FlDotData(show: false),
+          return TweenAnimationBuilder<Offset>(
+            duration: _yDuration,
+            curve: Curves.easeOutCubic,
+            tween: _yRangeTween!,
+            builder: (context, animatedRange, _) {
+              final minY = animatedRange.dx;
+              final maxY = math.max(
+                animatedRange.dy,
+                minY + widget.minYInterval,
+              );
+              final interval = ChartAxis.niceYInterval(
+                maxY - minY,
+                minInterval: widget.minYInterval,
+              );
+              final chartContext = ScrollableChartContext(
+                colors: colors,
+                windowStart: windowStart,
+                visibleMinutes: _visibleMinutes,
+                highlightedX: highlightedX,
+                minutesPerPixel: minutesPerPixel,
+                minY: minY,
+                maxY: maxY,
+              );
+              final series = widget.buildSeries(chartContext);
+              final grid = ChartAxis.gridBars(
+                colors: colors,
+                windowStart: windowStart,
+                visibleMinutes: _visibleMinutes,
+                minY: minY,
+                maxY: maxY,
+                interval: interval,
+              );
+
+              return LineChart(
+                LineChartData(
+                  clipData: const FlClipData.all(),
+                  lineTouchData: LineTouchData(
+                    handleBuiltInTouches: true,
+                    touchCallback: (event, response) => _onTouch(
+                      event: event,
+                      response: response,
+                      minutesPerPixel: minutesPerPixel,
+                    ),
+                    getTouchedSpotIndicator: (barData, spotIndexes) =>
+                        spotIndexes
+                            .map(
+                              (index) => TouchedSpotIndicatorData(
+                                const FlLine(color: Colors.transparent),
+                                FlDotData(show: false),
+                              ),
+                            )
+                            .toList(),
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (touchedSpots) =>
+                          List<LineTooltipItem?>.filled(
+                            touchedSpots.length,
+                            null,
+                          ),
+                    ),
+                  ),
+                  gridData: const FlGridData(show: false),
+                  extraLinesData: const ExtraLinesData(),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: ChartAxis.bottomTitles(
+                        context: context,
+                        origin: widget.origin,
+                        isHourly: widget.isHourly,
+                        selectedX: highlightedX,
                       ),
-                    )
-                    .toList(),
-                touchTooltipData: LineTouchTooltipData(
-                  getTooltipItems: (touchedSpots) =>
-                      List<LineTooltipItem?>.filled(touchedSpots.length, null),
-                ),
-              ),
-              gridData: const FlGridData(show: false),
-              extraLinesData: const ExtraLinesData(),
-              titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
-                  sideTitles: ChartAxis.bottomTitles(
-                    context: context,
-                    origin: widget.origin,
-                    isHourly: widget.isHourly,
-                    selectedX: highlightedX,
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: ChartAxis.leftTitles(
+                        context,
+                        interval: interval,
+                        format: widget.formatY,
+                      ),
+                    ),
                   ),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [...grid, ...series],
+                  betweenBarsData:
+                      widget.buildBetweenBars?.call(
+                        chartContext,
+                        grid.length,
+                      ) ??
+                      const [],
+                  minX: windowStart - xPadding,
+                  maxX: windowStart + _visibleMinutes + xPadding,
+                  minY: minY,
+                  maxY: maxY,
+                  baselineX: 0,
                 ),
-                rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: ChartAxis.leftTitles(
-                    context,
-                    interval: yBounds.interval,
-                    format: widget.formatY,
-                  ),
-                ),
-              ),
-              borderData: FlBorderData(show: false),
-              lineBarsData: [
-                ...ChartAxis.gridBars(
-                  colors: colors,
-                  windowStart: windowStart,
-                  visibleMinutes: _visibleMinutes,
-                  minY: yBounds.minY,
-                  interval: yBounds.interval,
-                ),
-                ...series,
-              ],
-              betweenBarsData:
-                  widget.buildBetweenBars?.call(
-                    chartContext,
-                    seriesStartIndex,
-                  ) ??
-                  const [],
-              minX: windowStart - xPadding,
-              maxX: windowStart + _visibleMinutes + xPadding,
-              minY: yBounds.minY,
-              maxY: yBounds.maxY,
-              baselineX: 0,
-            ),
-            duration: Duration.zero,
+                duration: Duration.zero,
+              );
+            },
           );
         },
       ),

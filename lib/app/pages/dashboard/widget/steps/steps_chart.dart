@@ -41,7 +41,7 @@ class StepsChart extends StatelessWidget {
       isHourly: false,
       origin: origin,
       dataMaxX: spots.last.x,
-      yValues: [for (final spot in spots) spot.y],
+      ySpots: spots,
       selectablePoints: [
         for (final point in selectablePoints)
           (x: point.spot.x, data: point.observation),
