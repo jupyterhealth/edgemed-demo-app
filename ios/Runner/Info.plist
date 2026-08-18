@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>This app syncs your health data to your account.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app may update health data in Apple Health when syncing with your account.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
