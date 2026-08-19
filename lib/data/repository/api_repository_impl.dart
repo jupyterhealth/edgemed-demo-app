@@ -15,7 +15,7 @@ import 'package:jupyter_health/domain/repository/api_repository.dart';
 
 @LazySingleton(as: ApiRepository)
 class ApiRepositoryImpl implements ApiRepository {
-  static const _pageSize = 50;
+  static const _pageSize = 1000;
   static const _observationsFrom = '2025-01-01';
 
   final ApiDataSource _apiDataSource;

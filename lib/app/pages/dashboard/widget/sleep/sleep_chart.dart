@@ -52,6 +52,18 @@ class SleepChart extends StatelessWidget {
     return '${((part / total) * 100).round()}%';
   }
 
+  static double _stackedHours({
+    required double deep,
+    required double rem,
+    required double light,
+    required double total,
+  }) {
+    final stacked = deep + rem + light;
+    if (stacked > 0) return stacked;
+    if (total > 0) return total;
+    return 0;
+  }
+
   static String hourAxisLabel(double value) {
     if (value == 0) return '0';
     final text = value == value.roundToDouble()
@@ -120,7 +132,12 @@ class SleepChart extends StatelessWidget {
             sleep: (sleep) => (
               date: sleep.date,
               stages: (
-                total: sleep.value,
+                total: _stackedHours(
+                  deep: sleep.deep,
+                  rem: sleep.rem,
+                  light: sleep.light,
+                  total: sleep.value,
+                ),
                 deep: sleep.deep,
                 rem: sleep.rem,
                 light: sleep.light,
@@ -163,18 +180,19 @@ class SleepChart extends StatelessWidget {
 
     for (final day in days) {
       final stages = stagesByDay[day]!;
+      final hours = stages.total;
       final dayMinutes = day * ChartAxis.minutesPerDay;
       final dayDate = origin.add(Duration(minutes: dayMinutes.round()));
       final sample = sampleByDay[day]!;
 
       summed.add((
-        spot: FlSpot(dayMinutes.toDouble(), stages.total),
+        spot: FlSpot(dayMinutes.toDouble(), hours),
         stages: stages,
         observation: Observation(
           id: sample.id,
           type: sample.type,
           data: ObservationData.sleep(
-            value: stages.total,
+            value: hours,
             date: dayDate,
             deep: stages.deep,
             rem: stages.rem,
@@ -225,29 +243,48 @@ class SleepChart extends StatelessWidget {
     required double gapY,
     required Color color,
   }) {
-    var fromY = 0.0;
-    final bars = <LineChartBarData>[];
+    final remainder = stages.total - stages.light - stages.rem - stages.deep;
     final segments = [
       (hours: stages.light, color: lightSleepColor),
       (hours: stages.rem, color: remColor),
       (hours: stages.deep, color: color),
     ];
     final hasStages = segments.any((stage) => stage.hours > 0);
+    final displayed = [
+      if (hasStages && remainder > 0) (hours: remainder, color: color),
+      if (hasStages)
+        for (final stage in segments)
+          if (stage.hours > 0) stage,
+      if (!hasStages && stages.total > 0) (hours: stages.total, color: color),
+    ];
+    if (displayed.isEmpty) return const [];
 
-    for (final stage in [
-      if (hasStages) ...segments,
-      if (!hasStages) (hours: stages.total, color: color),
-    ]) {
-      if (stage.hours <= 0) continue;
-      final bar = _segmentBar(
-        x: x,
-        fromY: fromY,
-        hours: stage.hours,
-        color: stage.color,
-        radiusY: radiusY,
+    final totalHours = displayed.fold<double>(
+      0,
+      (sum, stage) => sum + stage.hours,
+    );
+    final gapCount = displayed.length - 1;
+    final effectiveGap = gapCount <= 0
+        ? 0.0
+        : gapY.clamp(0.0, totalHours / gapCount);
+    final drawableHours = totalHours - gapCount * effectiveGap;
+    final scale = totalHours <= 0 ? 0.0 : drawableHours / totalHours;
+
+    var fromY = 0.0;
+    final bars = <LineChartBarData>[];
+    for (var i = 0; i < displayed.length; i++) {
+      final stage = displayed[i];
+      bars.add(
+        _segmentBar(
+          x: x,
+          fromY: fromY,
+          hours: stage.hours * scale,
+          color: stage.color,
+          radiusY: radiusY,
+        ),
       );
-      bars.add(bar);
-      fromY += stage.hours + gapY;
+      fromY += stage.hours * scale;
+      if (i < gapCount) fromY += effectiveGap;
     }
 
     return bars;
