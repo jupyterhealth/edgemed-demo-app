@@ -68,27 +68,32 @@ abstract final class ChartAxis {
     bool fromZero = false,
   }) {
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    final minValue = fromZero ? 0.0 : values.reduce((a, b) => a < b ? a : b);
+    if (fromZero) {
+      final maxY = math.max(maxValue, minInterval);
+      return (
+        minY: 0.0,
+        maxY: maxY,
+        interval: niceYInterval(maxY, minInterval: minInterval),
+      );
+    }
+
+    final minValue = values.reduce((a, b) => a < b ? a : b);
     final span = math.max(maxValue - minValue, minInterval);
-    final paddedMin = fromZero ? 0.0 : minValue - span * _yPadding;
+    final paddedMin = minValue - span * _yPadding;
     final paddedMax = maxValue + span * _yPadding;
     final paddedSpan = math.max(paddedMax - paddedMin, minInterval);
     final interval = niceYInterval(paddedSpan, minInterval: minInterval);
     final targetRange = interval * (leftTitleCount - 1);
 
-    var minY = fromZero ? 0.0 : (paddedMin / interval).floor() * interval;
+    var minY = (paddedMin / interval).floor() * interval;
     if (minY < 0 && minValue >= 0) minY = 0;
 
     var maxY = (paddedMax / interval).ceil() * interval;
     if (maxY - minY < targetRange) {
-      if (fromZero) {
-        maxY = minY + targetRange;
-      } else {
-        final extra = targetRange - (maxY - minY);
-        minY -= (extra / 2 / interval).ceil() * interval;
-        if (minY < 0 && minValue >= 0) minY = 0;
-        maxY = minY + targetRange;
-      }
+      final extra = targetRange - (maxY - minY);
+      minY -= (extra / 2 / interval).ceil() * interval;
+      if (minY < 0 && minValue >= 0) minY = 0;
+      maxY = minY + targetRange;
     }
 
     if (paddedMax > maxY) {

@@ -49,10 +49,10 @@ abstract class OmhDataPointDto with _$OmhDataPointDto {
     final deep = _optionalSleepHours(body.deepSleepDuration);
     final rem = _optionalSleepHours(body.remSleepDuration);
     final light = _optionalSleepHours(body.lightSleepDuration);
-    final totalDuration = body.totalSleepTime ?? body.sleepDuration;
-    final total = totalDuration != null
-        ? _sleepHours(totalDuration)
-        : deep + rem + light;
+    final stageSum = deep + rem + light;
+    final total = stageSum > 0
+        ? stageSum
+        : _firstPositiveSleepHours(body.totalSleepTime, body.sleepDuration);
 
     return ObservationData.sleep(
       value: total,
@@ -69,6 +69,18 @@ abstract class OmhDataPointDto with _$OmhDataPointDto {
       return quantity.value;
     }
     return body.stepCount?.value;
+  }
+
+  static double _firstPositiveSleepHours(
+    OmhUnitValueDto? first,
+    OmhUnitValueDto? second,
+  ) {
+    for (final duration in [first, second]) {
+      if (duration == null) continue;
+      final hours = _sleepHours(duration);
+      if (hours > 0) return hours;
+    }
+    return 0;
   }
 
   static double _optionalSleepHours(OmhUnitValueDto? duration) =>
