@@ -90,7 +90,7 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
                           children: [
                             TextSpan(
                               text: bp?.systolic.toStringAsFixed(0) ?? '-',
-                              style: context.typography.headerLarge,
+                              style: context.typography.headerMedium,
                             ),
                             TextSpan(
                               text: ' ${T(context).systolicUnit}',
@@ -114,7 +114,7 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
                           children: [
                             TextSpan(
                               text: bp?.diastolic.toStringAsFixed(0) ?? '-',
-                              style: context.typography.headerLarge,
+                              style: context.typography.headerMedium,
                             ),
                             TextSpan(
                               text: ' ${T(context).diastolicUnit}',

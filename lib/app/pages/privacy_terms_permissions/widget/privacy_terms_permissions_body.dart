@@ -4,7 +4,8 @@ import 'package:jupyter_health/app/common/widgets/button.dart';
 import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
-import 'package:jupyter_health/app/pages/privacy_terms_permissions/widget/consent_checkbox.dart';
+import 'package:jupyter_health/app/common/widgets/styled_checkbox.dart';
+import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/domain/entity/consents/consent_item.dart';
 import 'package:jupyter_health/gen/assets.gen.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
@@ -37,10 +38,13 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          Text('Permissions & Consent', style: context.typography.headerMedium),
+          Text(
+            T(context).permissionsAndConsent,
+            style: context.typography.headerMedium,
+          ),
           const SizedBox(height: 4),
           Text(
-            'One last step before you continue. Allow access to Apple Health to view your Blood Glucose.',
+            T(context).permissionsDescription,
             style: context.typography.bodyLarge,
           ),
           Padding(
@@ -60,7 +64,10 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
                       height: 32,
                     ),
                     const SizedBox(width: 12),
-                    Text('Apple Health', style: context.typography.headerSmall),
+                    Text(
+                      T(context).appleHealth,
+                      style: context.typography.headerSmall,
+                    ),
                   ],
                 ),
               ),
@@ -72,9 +79,9 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
                 child: Column(
                   children: [
                     for (final item in consented)
-                      ConsentCheckbox(label: item.text, value: true),
+                      StyledCheckbox(label: item.text, value: true),
                     for (final item in pending)
-                      ConsentCheckbox(
+                      StyledCheckbox(
                         label: item.text,
                         value: selected.contains(item),
                         onChanged: isSubmitting
@@ -90,7 +97,7 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
           else
             const Spacer(),
           Button(
-            text: 'Connect',
+            text: T(context).connect,
             isLoading: isSubmitting,
             onPressed: canSubmit
                 ? () => context.read<ConsentsCubit>().submit()

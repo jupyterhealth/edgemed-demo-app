@@ -77,6 +77,7 @@ class BloodPressureChart extends StatelessWidget {
           spots: diastolicSpots,
           color: diastolicColor,
           chartContext: chartContext,
+          isCurved: isHourly,
           belowBarData: BarAreaData(
             show: true,
             gradient: LinearGradient(
@@ -93,6 +94,7 @@ class BloodPressureChart extends StatelessWidget {
           spots: systolicSpots,
           color: chartContext.colors.primary,
           chartContext: chartContext,
+          isCurved: isHourly,
         ),
       ],
       buildBetweenBars: (chartContext, seriesStartIndex) => [
@@ -265,9 +267,10 @@ class BloodPressureChart extends StatelessWidget {
     required List<FlSpot> spots,
     required Color color,
     required ScrollableChartContext chartContext,
+    required bool isCurved,
     BarAreaData? belowBarData,
   }) => LineChartBarData(
-    isCurved: true,
+    isCurved: isCurved,
     curveSmoothness: 0.25,
     color: color,
     barWidth: 2,

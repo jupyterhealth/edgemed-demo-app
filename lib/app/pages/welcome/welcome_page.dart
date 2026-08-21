@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jupyter_health/app/common/widgets/button.dart';
 import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
+import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
 import 'package:jupyter_health/gen/assets.gen.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
@@ -31,7 +32,7 @@ class WelcomePage extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Your continuous  health  monitoring app',
+                  T(context).welcomeSubtitle,
                   style: context.typography.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -41,9 +42,9 @@ class WelcomePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Button(
-              text: 'Get Started',
+              text: T(context).getStarted,
               onPressed: () =>
-                  context.router.replace(const PrivacyTermsPermissionsRoute()),
+                  context.router.replace(QuestionnaireIntroRoute()),
             ),
           ),
         ],

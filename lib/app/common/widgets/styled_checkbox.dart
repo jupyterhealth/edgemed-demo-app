@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
-class ConsentCheckbox extends StatelessWidget {
+class StyledCheckbox extends StatelessWidget {
   final String label;
   final bool value;
   final void Function(bool value)? onChanged;
+  final TextStyle? labelStyle;
 
-  const ConsentCheckbox({
+  const StyledCheckbox({
     super.key,
     required this.label,
     required this.value,
     this.onChanged,
+    this.labelStyle,
   });
 
   @override
@@ -35,7 +37,12 @@ class ConsentCheckbox extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: context.typography.bodyMedium)),
+            Expanded(
+              child: Text(
+                label,
+                style: labelStyle ?? context.typography.bodyMedium,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/gen/assets.gen.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
@@ -12,15 +13,15 @@ class EmptyDashboardWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Assets.images.svg.noDataImage.svg(),
-        Text('Empty Dashboard', style: context.typography.headerLarge),
+        Text(T(context).emptyDashboard, style: context.typography.headerLarge),
         SizedBox(height: 4),
         Text(
-          'Add your first observation to get started',
+          T(context).addFirstObservation,
           style: context.typography.headerSmall,
         ),
         SizedBox(height: 12),
         Text(
-          'A quick check of UCSF Edge\'s permissions in Settings may help.',
+          T(context).emptyDashboardPermissionsHint,
           style: context.typography.bodyLarge.copyWith(
             color: context.theme.textSecondary,
           ),
@@ -28,7 +29,7 @@ class EmptyDashboardWidget extends StatelessWidget {
         Text.rich(
           TextSpan(
             children: [
-              const TextSpan(text: '1. Go to Settings '),
+              TextSpan(text: T(context).emptyDashboardStep1Prefix),
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
                 child: Assets.images.png.iosSettingsIcon.image(
@@ -36,7 +37,7 @@ class EmptyDashboardWidget extends StatelessWidget {
                   height: 20,
                 ),
               ),
-              const TextSpan(text: ' > Privacy & Security.'),
+              TextSpan(text: T(context).emptyDashboardStep1Suffix),
             ],
           ),
           style: context.typography.bodyLarge.copyWith(
@@ -44,13 +45,13 @@ class EmptyDashboardWidget extends StatelessWidget {
           ),
         ),
         Text(
-          '2. Tap UCSF Edge app.',
+          T(context).emptyDashboardStep2,
           style: context.typography.bodyLarge.copyWith(
             color: context.theme.textSecondary,
           ),
         ),
         Text(
-          '3. Review the app\'s permissions.',
+          T(context).emptyDashboardStep3,
           style: context.typography.bodyLarge.copyWith(
             color: context.theme.textSecondary,
           ),

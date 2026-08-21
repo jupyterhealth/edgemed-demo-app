@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/config/theme/app_colors.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
@@ -18,7 +19,16 @@ abstract final class ChartAxis {
   static const bottomTitlesSize = 32.0;
   static const dotPaddingPx = 18.0;
   static const _yPadding = 0.12;
-  static const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  static List<String> dayLabels(BuildContext context) => [
+    T(context).dayMon,
+    T(context).dayTue,
+    T(context).dayWed,
+    T(context).dayThu,
+    T(context).dayFri,
+    T(context).daySat,
+    T(context).daySun,
+  ];
 
   static double visibleMinutes({required bool isHourly}) =>
       isHourly ? visibleHours * minutesPerHour : visibleDays * minutesPerDay;
@@ -198,7 +208,7 @@ abstract final class ChartAxis {
           meta: meta,
           space: 10,
           child: Text(
-            isHourly ? hourLabel(date) : dayLabel(date),
+            isHourly ? hourLabel(context, date) : dayLabel(context, date),
             style: context.typography.bodySmall.copyWith(
               color: context.theme.textTertiary,
               fontWeight: isSelected ? FontWeight.w700 : null,
@@ -209,14 +219,15 @@ abstract final class ChartAxis {
     );
   }
 
-  static String hourLabel(DateTime date) {
+  static String hourLabel(BuildContext context, DateTime date) {
     final hour = date.hour;
-    final period = hour < 12 ? 'am' : 'pm';
+    final period = hour < 12 ? T(context).timeAm : T(context).timePm;
     final hour12 = hour % 12 == 0 ? 12 : hour % 12;
     return '$hour12$period';
   }
 
-  static String dayLabel(DateTime date) => dayLabels[date.weekday - 1];
+  static String dayLabel(BuildContext context, DateTime date) =>
+      dayLabels(context)[date.weekday - 1];
 
   static List<LineChartBarData> gridBars({
     required AppColorsTheme colors,
