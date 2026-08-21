@@ -394,10 +394,7 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
                 animatedRange.dy,
                 minY + widget.minYInterval,
               );
-              final interval = ChartAxis.niceYInterval(
-                maxY - minY,
-                minInterval: widget.minYInterval,
-              );
+              final interval = yBounds.interval;
               final chartContext = ScrollableChartContext(
                 colors: colors,
                 windowStart: windowStart,

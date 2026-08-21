@@ -24,7 +24,7 @@ class SleepStageRow extends StatelessWidget {
         Text.rich(
           TextSpan(
             children: [
-              TextSpan(text: duration, style: context.typography.headerLarge),
+              TextSpan(text: duration, style: context.typography.headerMedium),
               TextSpan(text: ' $label', style: context.typography.bodyMedium),
             ],
           ),

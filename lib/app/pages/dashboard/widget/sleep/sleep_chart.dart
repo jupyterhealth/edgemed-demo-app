@@ -26,6 +26,7 @@ class SleepChart extends StatelessWidget {
   static const lightSleepColor = Color(0xFF8E919D);
   static const _barWidthPx = 14.0;
   static const _segmentGapPx = 4.0;
+  static const _minSegmentHours = 1 / 60;
 
   final List<Observation> observations;
   final void Function(Observation observation) onObservationSelected;
@@ -62,6 +63,19 @@ class SleepChart extends StatelessWidget {
     if (stacked > 0) return stacked;
     if (total > 0) return total;
     return 0;
+  }
+
+  /// Keeps chart scale aligned with rendered bars when a day aggregates both
+  /// stage breakdowns and total-only observations.
+  static _SleepStages _normalizedStages(_SleepStages stages) {
+    final stacked = stages.deep + stages.rem + stages.light;
+    if (stacked <= 0) return stages;
+    return (
+      total: stacked,
+      deep: stages.deep,
+      rem: stages.rem,
+      light: stages.light,
+    );
   }
 
   static String hourAxisLabel(double value) {
@@ -179,7 +193,7 @@ class SleepChart extends StatelessWidget {
     final summed = <_SleepDay>[];
 
     for (final day in days) {
-      final stages = stagesByDay[day]!;
+      final stages = _normalizedStages(stagesByDay[day]!);
       final hours = stages.total;
       final dayMinutes = day * ChartAxis.minutesPerDay;
       final dayDate = origin.add(Duration(minutes: dayMinutes.round()));
@@ -217,6 +231,9 @@ class SleepChart extends StatelessWidget {
         : yRange / plotHeight;
     final radiusY = (_barWidthPx / 2) * yPerPixel;
     final gapY = _segmentGapPx * yPerPixel;
+    final yCapScale = chartContext.maxY <= 0
+        ? 1.0
+        : (chartContext.maxY - radiusY) / chartContext.maxY;
     final minX = chartContext.windowStart - ChartAxis.minutesPerDay;
     final maxX =
         chartContext.windowStart +
@@ -230,7 +247,8 @@ class SleepChart extends StatelessWidget {
             x: day.spot.x,
             stages: day.stages,
             radiusY: radiusY,
-            gapY: gapY,
+            gapY: gapY * yCapScale,
+            yCapScale: yCapScale,
             color: chartContext.colors.primary,
           ),
     ];
@@ -241,21 +259,26 @@ class SleepChart extends StatelessWidget {
     required _SleepStages stages,
     required double radiusY,
     required double gapY,
+    required double yCapScale,
     required Color color,
   }) {
-    final remainder = stages.total - stages.light - stages.rem - stages.deep;
+    final remainder =
+        stages.total - stages.light - stages.rem - stages.deep;
     final segments = [
       (hours: stages.light, color: lightSleepColor),
       (hours: stages.rem, color: remColor),
       (hours: stages.deep, color: color),
     ];
-    final hasStages = segments.any((stage) => stage.hours > 0);
+    final hasStages = segments.any((stage) => stage.hours > _minSegmentHours);
     final displayed = [
-      if (hasStages && remainder > 0) (hours: remainder, color: color),
+      if (hasStages && remainder > _minSegmentHours)
+        (hours: remainder * yCapScale, color: color),
       if (hasStages)
         for (final stage in segments)
-          if (stage.hours > 0) stage,
-      if (!hasStages && stages.total > 0) (hours: stages.total, color: color),
+          if (stage.hours > _minSegmentHours)
+            (hours: stage.hours * yCapScale, color: stage.color),
+      if (!hasStages && stages.total > _minSegmentHours)
+        (hours: stages.total * yCapScale, color: color),
     ];
     if (displayed.isEmpty) return const [];
 

@@ -20,11 +20,14 @@ class StyledScaffold extends StatelessWidget {
       padding: padding ?? EdgeInsets.symmetric(horizontal: 20),
       child: this.body,
     );
-    return Scaffold(
-      appBar: appBar,
-      backgroundColor: context.theme.surface,
-      body: SafeArea(
-        child: scrollBody ? SingleChildScrollView(child: body) : body,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: appBar,
+        backgroundColor: context.theme.surface,
+        body: SafeArea(
+          child: scrollBody ? SingleChildScrollView(child: body) : body,
+        ),
       ),
     );
   }

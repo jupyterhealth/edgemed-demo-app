@@ -11,5 +11,8 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: WelcomeRoute.page),
     AutoRoute(page: PrivacyTermsPermissionsRoute.page),
     AutoRoute(page: DashboardRoute.page),
+    AutoRoute(page: QuestionnaireIntroRoute.page),
+    AutoRoute(page: QuestionnaireRoute.page),
+
   ];
 }
