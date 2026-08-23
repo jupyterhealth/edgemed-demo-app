@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:jupyter_health/data/dto/auth/invitation_redeem_response_dto.dart';
+import 'package:jupyter_health/data/dto/auth/oauth_token_response_dto.dart';
 import 'package:jupyter_health/data/dto/consents/patient_consents_dto.dart';
 import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/observation_dto.dart';
@@ -13,6 +15,21 @@ part 'api_data_source_impl.g.dart';
 abstract class ApiDataSource {
   @factoryMethod
   factory ApiDataSource(@Named('apiDio') Dio dio) = _ApiDataSource;
+
+  @POST('/api/v1/invitation/{invitationCode}')
+  Future<HttpResponse<InvitationRedeemResponseDto>> redeemInvitation({
+    @Path('invitationCode') required String invitationCode,
+  });
+
+  @POST('/o/token/')
+  @FormUrlEncoded()
+  Future<HttpResponse<OAuthTokenResponseDto>> exchangeToken({
+    @Field('grant_type') required String grantType,
+    @Field('code') required String code,
+    @Field('redirect_uri') required String redirectUri,
+    @Field('client_id') required String clientId,
+    @Field('code_verifier') required String codeVerifier,
+  });
 
   @GET('/api/v1/patients/me')
   Future<HttpResponse<User>> getUser();

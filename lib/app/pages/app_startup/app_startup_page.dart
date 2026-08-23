@@ -17,10 +17,11 @@ class AppStartupPage extends StatelessWidget {
         listener: (context, state) {
           state.mapOrNull(
             authenticated: (value) {
+              //TODO check if user has completed consents and questionnaire
               context.router.replace(const WelcomeRoute());
             },
             unauthenticated: (_) {
-              print('unauthenticated');
+              context.router.replace(const WelcomeRoute());
             },
           );
         },
