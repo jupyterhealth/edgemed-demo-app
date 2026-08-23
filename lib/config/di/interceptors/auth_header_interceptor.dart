@@ -15,7 +15,9 @@ class AuthHeaderInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final isAuthRequest = options.path.contains('/oauth/token');
+    final isAuthRequest =
+        options.path.contains('/o/token') ||
+        options.path.contains('/api/v1/invitation/');
     if (!isAuthRequest && options.headers['Authorization'] == null) {
       final accessToken = await _localStorageRepository.getAccessToken();
       if (accessToken != null && accessToken.isNotEmpty) {

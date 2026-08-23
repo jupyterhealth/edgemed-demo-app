@@ -5,6 +5,9 @@ import 'package:jupyter_health/config/env/env.dart';
 import 'package:jupyter_health/data/data_source/api_data_source_impl.dart';
 import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
 import 'package:jupyter_health/data/utils/api_helpers.dart';
+import 'package:jupyter_health/data/utils/invitation_auth_utils.dart';
+import 'package:jupyter_health/utils/invitation_utils.dart';
+import 'package:jupyter_health/domain/entity/auth_token.dart';
 import 'package:jupyter_health/domain/entity/consents/consent_item.dart';
 import 'package:jupyter_health/domain/entity/consents/patient_consents.dart';
 import 'package:jupyter_health/domain/entity/failure.dart';
@@ -163,4 +166,27 @@ class ApiRepositoryImpl implements ApiRepository {
     }
     return resolved.toString();
   }
+
+  @override
+  Future<Either<Failure, AuthToken>> login(String invitationCode) =>
+      safeApiCall(
+        apiCall: () async {
+          final token = normalizeInvitationCode(invitationCode);
+
+          final redeemResponse = await _apiDataSource.redeemInvitation(
+            invitationCode: token,
+          );
+          final grant = redeemResponse.data.grant;
+
+          final tokenResponse = await _apiDataSource.exchangeToken(
+            grantType: grant.grantType,
+            code: grant.code,
+            redirectUri: grant.redirectUri,
+            clientId: grant.clientId,
+            codeVerifier: invitationCodeVerifier(token),
+          );
+
+          return tokenResponse.data.toDomain();
+        },
+      );
 }

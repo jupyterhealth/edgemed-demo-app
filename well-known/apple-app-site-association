@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "KZJSZ95597.com.jupyter.health",
+          "KZJSZ95597.com.jupyter.health.staging",
+          "KZJSZ95597.com.jupyter.health.preprod"
+        ],
+        "components": [
+          {
+            "/": "/clients/ucsf-edge/*",
+            "comment": "UCSF Edge invitation links"
+          }
+        ]
+      }
+    ]
+  }
+}
