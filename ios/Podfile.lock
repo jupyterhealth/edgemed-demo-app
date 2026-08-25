@@ -35,6 +35,8 @@ PODS:
     - Flutter
     - FlutterMacOS
     - Sentry/HybridSDK (= 8.58.4)
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
@@ -44,6 +46,7 @@ DEPENDENCIES:
   - open_wearables_health_sdk (from `.symlinks/plugins/open_wearables_health_sdk/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -69,6 +72,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info_plus/ios"
   sentry_flutter:
     :path: ".symlinks/plugins/sentry_flutter/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   app_links: a754cbec3c255bd4bbb4d236ecc06f28cd9a7ce8
@@ -84,6 +89,7 @@ SPEC CHECKSUMS:
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
   sentry_flutter: 01a996130a18996b59600c51e68b0e6364cde8b3
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
 PODFILE CHECKSUM: 7e85374348217b1f5212b93d8cdc953e28fd895a
 

@@ -72,31 +72,48 @@ class BloodPressureChart extends StatelessWidget {
       ],
       onPointSelected: onObservationSelected,
       onReachOlderData: onLoadMore,
-      buildSeries: (chartContext) => [
-        _series(
-          spots: diastolicSpots,
-          color: diastolicColor,
-          chartContext: chartContext,
-          isCurved: isHourly,
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                diastolicColor.withValues(alpha: 0.35),
-                diastolicColor.withValues(alpha: 0.0),
-              ],
+      buildSeries: (chartContext) {
+        final maxGap = ChartAxis.snapInterval(isHourly: isHourly);
+        final isolatedXs = ChartAxis.isolatedSpotXs(
+          systolicSpots,
+          maxGap: maxGap,
+        );
+        final gappedDiastolic = ChartAxis.spotsWithGaps(
+          diastolicSpots,
+          maxGap: maxGap,
+        );
+        final gappedSystolic = ChartAxis.spotsWithGaps(
+          systolicSpots,
+          maxGap: maxGap,
+        );
+        return [
+          _series(
+            spots: gappedDiastolic,
+            isolatedXs: isolatedXs,
+            color: diastolicColor,
+            chartContext: chartContext,
+            isCurved: isHourly,
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  diastolicColor.withValues(alpha: 0.35),
+                  diastolicColor.withValues(alpha: 0.0),
+                ],
+              ),
             ),
           ),
-        ),
-        _series(
-          spots: systolicSpots,
-          color: chartContext.colors.primary,
-          chartContext: chartContext,
-          isCurved: isHourly,
-        ),
-      ],
+          _series(
+            spots: gappedSystolic,
+            isolatedXs: isolatedXs,
+            color: chartContext.colors.primary,
+            chartContext: chartContext,
+            isCurved: isHourly,
+          ),
+        ];
+      },
       buildBetweenBars: (chartContext, seriesStartIndex) => [
         BetweenBarsData(
           fromIndex: seriesStartIndex,
@@ -265,6 +282,7 @@ class BloodPressureChart extends StatelessWidget {
 
   LineChartBarData _series({
     required List<FlSpot> spots,
+    required Set<double> isolatedXs,
     required Color color,
     required ScrollableChartContext chartContext,
     required bool isCurved,
@@ -278,11 +296,12 @@ class BloodPressureChart extends StatelessWidget {
     belowBarData: belowBarData,
     dotData: FlDotData(
       show: true,
-      checkToShowDot: (spot, _) => spot.x == chartContext.highlightedX,
+      checkToShowDot: (spot, _) =>
+          spot.x == chartContext.highlightedX || isolatedXs.contains(spot.x),
       getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
-        radius: 6,
+        radius: spot.x == chartContext.highlightedX ? 6 : 5,
         color: color,
-        strokeWidth: 6,
+        strokeWidth: spot.x == chartContext.highlightedX ? 6 : 0,
         strokeColor: color.withValues(alpha: 0.25),
       ),
     ),

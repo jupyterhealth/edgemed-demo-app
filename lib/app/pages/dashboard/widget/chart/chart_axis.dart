@@ -41,6 +41,41 @@ abstract final class ChartAxis {
     return (x / interval).round() * interval;
   }
 
+  static List<FlSpot> spotsWithGaps(
+    List<FlSpot> spots, {
+    required double maxGap,
+  }) {
+    if (spots.length <= 1) return spots;
+
+    final result = <FlSpot>[spots.first];
+    for (var i = 1; i < spots.length; i++) {
+      if (spots[i].x - spots[i - 1].x > maxGap) {
+        result.add(FlSpot.nullSpot);
+      }
+      result.add(spots[i]);
+    }
+    return result;
+  }
+
+  static Set<double> isolatedSpotXs(
+    List<FlSpot> spots, {
+    required double maxGap,
+  }) {
+    if (spots.isEmpty) return const {};
+    if (spots.length == 1) return {spots.first.x};
+
+    final isolated = <double>{};
+    for (var i = 0; i < spots.length; i++) {
+      final hasPrevious = i > 0 && spots[i].x - spots[i - 1].x <= maxGap;
+      final hasNext =
+          i < spots.length - 1 && spots[i + 1].x - spots[i].x <= maxGap;
+      if (!hasPrevious && !hasNext) {
+        isolated.add(spots[i].x);
+      }
+    }
+    return isolated;
+  }
+
   static DateTime chartOrigin({
     required DateTime firstDate,
     required bool isHourly,

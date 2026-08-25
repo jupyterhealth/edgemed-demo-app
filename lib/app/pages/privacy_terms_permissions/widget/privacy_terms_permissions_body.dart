@@ -5,12 +5,13 @@ import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
 import 'package:jupyter_health/app/common/widgets/styled_checkbox.dart';
+import 'package:jupyter_health/app/pages/privacy_terms_permissions/widget/privacy_terms_consent_label.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/domain/entity/consents/consent_item.dart';
 import 'package:jupyter_health/gen/assets.gen.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
-class PrivacyTermsPermissionsBody extends StatelessWidget {
+class PrivacyTermsPermissionsBody extends StatefulWidget {
   final List<ConsentItem> consented;
   final List<ConsentItem> pending;
   final List<ConsentItem> selected;
@@ -25,12 +26,23 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
   });
 
   @override
+  State<PrivacyTermsPermissionsBody> createState() =>
+      _PrivacyTermsPermissionsBodyState();
+}
+
+class _PrivacyTermsPermissionsBodyState
+    extends State<PrivacyTermsPermissionsBody> {
+  bool privacyPolicyConsented = true;
+
+  @override
   Widget build(BuildContext context) {
-    final hasConsents = consented.isNotEmpty || pending.isNotEmpty;
+    final hasConsents =
+        widget.consented.isNotEmpty || widget.pending.isNotEmpty;
     final canSubmit =
-        !isSubmitting &&
-        pending.isNotEmpty &&
-        selected.length == pending.length;
+        !widget.isSubmitting &&
+        widget.pending.isNotEmpty &&
+        widget.selected.length == widget.pending.length &&
+        privacyPolicyConsented;
 
     return StyledScaffold(
       appBar: const StyledAppBar(),
@@ -78,18 +90,26 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (final item in consented)
+                    for (final item in widget.consented)
                       StyledCheckbox(label: item.text, value: true),
-                    for (final item in pending)
+                    for (final item in widget.pending)
                       StyledCheckbox(
                         label: item.text,
-                        value: selected.contains(item),
-                        onChanged: isSubmitting
+                        value: widget.selected.contains(item),
+                        onChanged: widget.isSubmitting
                             ? null
                             : (_) => context
                                   .read<ConsentsCubit>()
                                   .togglePending(item),
                       ),
+                    StyledCheckbox(
+                      labelWidget: const PrivacyTermsConsentLabel(),
+                      value: privacyPolicyConsented,
+                      onChanged: widget.isSubmitting
+                          ? null
+                          : (value) =>
+                                setState(() => privacyPolicyConsented = value),
+                    ),
                   ],
                 ),
               ),
@@ -98,7 +118,7 @@ class PrivacyTermsPermissionsBody extends StatelessWidget {
             const Spacer(),
           Button(
             text: T(context).connect,
-            isLoading: isSubmitting,
+            isLoading: widget.isSubmitting,
             onPressed: canSubmit
                 ? () => context.read<ConsentsCubit>().submit()
                 : null,
