@@ -23,15 +23,22 @@ class ConsentsCubit extends Cubit<ConsentsState> {
     emit(ConsentsState.loading());
     final result = await _apiRepository.getPatientConsents(patientId: userId);
     result.fold((failure) => emit(ConsentsState.error(failure)), (consents) {
-      if (consents.pending.isEmpty) {
+      final filteredPending = consents.pending
+          .where(
+            (element) =>
+                element.codingCode == 'omh:blood-glucose:4.0' ||
+                element.codingCode == 'QuestionnaireResponse',
+          )
+          .toList();
+      if (filteredPending.isEmpty) {
         emit(ConsentsState.consented());
         return;
       }
       emit(
         ConsentsState.consentsPending(
           consented: consents.consented,
-          pending: consents.pending,
-          selected: consents.pending, //all selected by default
+          pending: filteredPending,
+          selected: filteredPending, //all selected by default
         ),
       );
     });

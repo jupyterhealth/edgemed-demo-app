@@ -60,9 +60,16 @@ class GlucoseChart extends StatelessWidget {
       ],
       onPointSelected: onObservationSelected,
       onReachOlderData: onLoadMore,
-      buildSeries: (chartContext) => [
-        _glucoseSeries(spots: spots, chartContext: chartContext),
-      ],
+      buildSeries: (chartContext) {
+        final maxGap = ChartAxis.snapInterval(isHourly: isHourly);
+        return [
+          _glucoseSeries(
+            spots: ChartAxis.spotsWithGaps(spots, maxGap: maxGap),
+            isolatedXs: ChartAxis.isolatedSpotXs(spots, maxGap: maxGap),
+            chartContext: chartContext,
+          ),
+        ];
+      },
     );
   }
 
@@ -157,6 +164,7 @@ class GlucoseChart extends StatelessWidget {
 
   LineChartBarData _glucoseSeries({
     required List<FlSpot> spots,
+    required Set<double> isolatedXs,
     required ScrollableChartContext chartContext,
   }) => LineChartBarData(
     isCurved: true,
@@ -166,17 +174,23 @@ class GlucoseChart extends StatelessWidget {
     isStrokeCapRound: true,
     dotData: FlDotData(
       show: true,
-      checkToShowDot: (spot, _) => spot.x == chartContext.highlightedX,
-      getDotPainter: (spot, percent, bar, index) =>
-          _dotPainter(chartContext.colors),
+      checkToShowDot: (spot, _) =>
+          spot.x == chartContext.highlightedX || isolatedXs.contains(spot.x),
+      getDotPainter: (spot, percent, bar, index) => _dotPainter(
+        chartContext.colors,
+        isHighlighted: spot.x == chartContext.highlightedX,
+      ),
     ),
     spots: spots,
   );
 
-  FlDotCirclePainter _dotPainter(AppColorsTheme colors) => FlDotCirclePainter(
-    radius: 6,
+  FlDotCirclePainter _dotPainter(
+    AppColorsTheme colors, {
+    required bool isHighlighted,
+  }) => FlDotCirclePainter(
+    radius: isHighlighted ? 6 : 5,
     color: colors.primary,
-    strokeWidth: 6,
+    strokeWidth: isHighlighted ? 6 : 0,
     strokeColor: colors.primary.withValues(alpha: 0.25),
   );
 }

@@ -78,15 +78,7 @@ class DashboardPage extends StatelessWidget {
                                   )
                                 : null,
                           ),
-                          BloodPressureChartBox(
-                            observations: value.bloodPressure.observations,
-                            isLoadingMore: value.bloodPressure.isLoadingMore,
-                            onLoadMore: value.bloodPressure.hasMore
-                                ? () => context.read<DashboardCubit>().loadMore(
-                                    ObservationType.bloodPressure,
-                                  )
-                                : null,
-                          ),
+
                           StepsChartBox(
                             observations: value.steps.observations,
                             isLoadingMore: value.steps.isLoadingMore,
@@ -102,6 +94,15 @@ class DashboardPage extends StatelessWidget {
                             onLoadMore: value.sleep.hasMore
                                 ? () => context.read<DashboardCubit>().loadMore(
                                     ObservationType.sleep,
+                                  )
+                                : null,
+                          ),
+                          BloodPressureChartBox(
+                            observations: value.bloodPressure.observations,
+                            isLoadingMore: value.bloodPressure.isLoadingMore,
+                            onLoadMore: value.bloodPressure.hasMore
+                                ? () => context.read<DashboardCubit>().loadMore(
+                                    ObservationType.bloodPressure,
                                   )
                                 : null,
                           ),

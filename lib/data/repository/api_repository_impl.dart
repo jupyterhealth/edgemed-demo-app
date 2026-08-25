@@ -2,8 +2,11 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 import 'package:jupyter_health/config/env/env.dart';
+import 'package:jupyter_health/config/env/fhir_config.dart';
 import 'package:jupyter_health/data/data_source/api_data_source_impl.dart';
 import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
+import 'package:jupyter_health/data/dto/fhe/fhir/fhir_source_dto.dart';
+import 'package:jupyter_health/data/dto/fhe/fhir/questionnaire_response_dto.dart';
 import 'package:jupyter_health/data/utils/api_helpers.dart';
 import 'package:jupyter_health/data/utils/invitation_auth_utils.dart';
 import 'package:jupyter_health/utils/invitation_utils.dart';
@@ -13,6 +16,7 @@ import 'package:jupyter_health/domain/entity/consents/patient_consents.dart';
 import 'package:jupyter_health/domain/entity/failure.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_page.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
+import 'package:jupyter_health/domain/entity/questionnaire/question.dart';
 import 'package:jupyter_health/domain/entity/user.dart';
 import 'package:jupyter_health/domain/repository/api_repository.dart';
 
@@ -166,6 +170,32 @@ class ApiRepositoryImpl implements ApiRepository {
     }
     return resolved.toString();
   }
+
+  @override
+  Future<Either<Failure, Unit>> submitQuestionnaire({
+    required int patientId,
+    required List<Question> questions,
+  }) => safeApiCall(
+    apiCall: () async {
+      final sourceResponse = await _apiDataSource.registerFhirSource(
+        body: const RegisterFhirSourceRequestDto(
+          label: FhirConfig.fhirSourceLabel,
+          fhirBaseUrl: FhirConfig.fhirBaseUrl,
+          dataSource: FhirConfig.dataSourceId,
+        ),
+      );
+
+      await _apiDataSource.submitQuestionnaireResponse(
+        body: QuestionnaireResponseDto.fromQuestions(
+          patientId: patientId,
+          fhirSourceId: sourceResponse.data.id,
+          questions: questions,
+          authored: DateTime.now().toUtc(),
+        ),
+      );
+      return unit;
+    },
+  );
 
   @override
   Future<Either<Failure, AuthToken>> login(String invitationCode) =>

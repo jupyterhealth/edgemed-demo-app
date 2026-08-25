@@ -4,7 +4,9 @@ import 'package:jupyter_health/data/dto/auth/invitation_redeem_response_dto.dart
 import 'package:jupyter_health/data/dto/auth/oauth_token_response_dto.dart';
 import 'package:jupyter_health/data/dto/consents/patient_consents_dto.dart';
 import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
+import 'package:jupyter_health/data/dto/fhe/fhir/fhir_source_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/observation_dto.dart';
+import 'package:jupyter_health/data/dto/fhe/fhir/questionnaire_response_dto.dart';
 import 'package:jupyter_health/domain/entity/user.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -43,6 +45,16 @@ abstract class ApiDataSource {
   Future<HttpResponse<dynamic>> submitPatientConsents({
     @Path('patientId') required int patientId,
     @Body() required SubmitConsentsRequestDto body,
+  });
+
+  @POST('/api/v1/fhir_sources')
+  Future<HttpResponse<FhirSourceDto>> registerFhirSource({
+    @Body() required RegisterFhirSourceRequestDto body,
+  });
+
+  @POST('/FHIR/R5/QuestionnaireResponse')
+  Future<HttpResponse<dynamic>> submitQuestionnaireResponse({
+    @Body() required QuestionnaireResponseDto body,
   });
 
   @GET('/FHIR/R5/Observation')

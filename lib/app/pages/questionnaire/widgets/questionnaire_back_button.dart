@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class QuestionnaireBackButton extends StatelessWidget {
-  final void Function() onPressed;
-  const QuestionnaireBackButton({super.key, required this.onPressed});
+  final void Function()? onPressed;
+  const QuestionnaireBackButton({super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
