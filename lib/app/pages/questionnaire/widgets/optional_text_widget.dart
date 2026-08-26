@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/app/common/widgets/styled_text_field.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 class OptionalTextWidget extends StatefulWidget {
@@ -37,6 +38,7 @@ class _OptionalTextWidgetState extends State<OptionalTextWidget> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,31 +46,10 @@ class _OptionalTextWidgetState extends State<OptionalTextWidget> {
           const SizedBox(height: 4),
           Text(widget.description, style: context.typography.bodyLarge),
           const SizedBox(height: 16),
-          TextField(
+          StyledTextField(
             controller: _controller,
             onChanged: widget.onAnswerChanged,
-            style: context.typography.bodyLarge,
-            decoration: InputDecoration(
-              hintText: 'Start typing...',
-              hintStyle: context.typography.bodyLarge.copyWith(
-                color: context.theme.textSecondary,
-              ),
-              filled: true,
-              fillColor: context.theme.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: context.theme.border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: context.theme.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: context.theme.borderDark),
-              ),
-              contentPadding: const EdgeInsets.all(12),
-            ),
+            hintText: 'Start typing...',
           ),
         ],
       ),

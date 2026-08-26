@@ -1,7 +1,7 @@
 abstract final class FhirConfig {
   static const dataSourceId = 70005;
-  static const fhirSourceLabel = 'Example App';
-  static const fhirBaseUrl = 'https://example.com/app';
+  static const fhirSourceLabel = 'UCSF EdgeMed';
+  static const fhirBaseUrl = 'https://ucsf.edge.med/fhir';
   static const questionnaireCanonical = 'Questionnaire/momentum-intake';
 
   static String fhirSourceUri(int fhirSourceId) =>

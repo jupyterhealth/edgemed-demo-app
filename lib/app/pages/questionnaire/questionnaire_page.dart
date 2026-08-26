@@ -5,7 +5,6 @@ import 'package:jupyter_health/app/common/widgets/button.dart';
 import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 import 'package:jupyter_health/app/common/wrappers/user_wrapper.dart';
-import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
 import 'package:jupyter_health/app/pages/questionnaire/cubit/questionnaire_cubit.dart';
 import 'package:jupyter_health/app/pages/questionnaire/widgets/multiple_choice_widget.dart';
 import 'package:jupyter_health/app/pages/questionnaire/widgets/optional_text_widget.dart';
@@ -31,7 +30,7 @@ class QuestionnairePage extends StatelessWidget {
           listenWhen: (previous, current) =>
               !previous.submitted && current.submitted,
           listener: (context, state) {
-            context.replaceRoute(const DashboardRoute());
+            context.replaceRoute(const PrivacyTermsPermissionsRoute());
           },
           builder: (context, state) {
             final cubit = context.read<QuestionnaireCubit>();
@@ -109,28 +108,12 @@ class QuestionnairePage extends StatelessWidget {
                       text: isLastQuestion ? T(context).shareAnswers : 'Next',
                       isLoading: state.isSubmitting,
                       onPressed: cubit.canGoNext
-                          ? () async {
+                          ? () {
                               if (!isLastQuestion) {
                                 cubit.nextQuestion();
                                 return;
                               }
-                              await cubit.submitAnswers(user.id);
-                              if (context.mounted) {
-                                final alreadyConsented = context
-                                    .read<ConsentsCubit>()
-                                    .state
-                                    .maybeMap(
-                                      consented: (_) => true,
-                                      orElse: () => false,
-                                    );
-                                if (alreadyConsented) {
-                                  context.pushRoute(
-                                    const PrivacyTermsPermissionsRoute(),
-                                  );
-                                } else {
-                                  context.pushRoute(const DashboardRoute());
-                                }
-                              }
+                              cubit.submitAnswers(user.id);
                             }
                           : null,
                     ),

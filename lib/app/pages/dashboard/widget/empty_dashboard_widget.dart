@@ -12,7 +12,7 @@ class EmptyDashboardWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Assets.images.svg.noDataImage.svg(),
+        Center(child: Assets.images.svg.noDataImage.svg()),
         Text(T(context).emptyDashboard, style: context.typography.headerLarge),
         SizedBox(height: 4),
         Text(
