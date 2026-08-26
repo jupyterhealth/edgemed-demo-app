@@ -35,7 +35,7 @@ class _PasscodePageState extends State<PasscodePage> {
           final route = switch (state.nextRoute!) {
             PasscodeNextRoute.questionnaire => const QuestionnaireIntroRoute(),
             PasscodeNextRoute.consents => const PrivacyTermsPermissionsRoute(),
-            PasscodeNextRoute.dashboard => const DashboardRoute(),
+            PasscodeNextRoute.dashboard => const NavigationRoute(),
           };
           context.router.replace(route);
         },

@@ -23,13 +23,13 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
             return BlocConsumer<ConsentsCubit, ConsentsState>(
               listener: (context, consentsState) {
                 consentsState.whenOrNull(
-                  consented: () {
+                  consented: (_) {
                     context.read<OpenWearablesCubit>().configure(
                       userAccessToken: accessToken,
                       refreshToken: refreshToken,
                       userId: user.id,
                     );
-                    context.router.replace(const DashboardRoute());
+                    context.router.replace(const NavigationRoute());
                   },
                 );
               },

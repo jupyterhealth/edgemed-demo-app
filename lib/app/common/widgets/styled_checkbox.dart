@@ -21,10 +21,7 @@ class StyledCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final labelContent =
         labelWidget ??
-        Text(
-          label!,
-          style: labelStyle ?? context.typography.bodyMedium,
-        );
+        Text(label!, style: labelStyle ?? context.typography.bodyMedium);
 
     final tappableLabel = labelWidget != null
         ? labelContent
@@ -35,20 +32,27 @@ class StyledCheckbox extends StatelessWidget {
           );
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Checkbox(
           value: value,
           onChanged: onChanged == null
               ? null
               : (checked) => onChanged!(checked ?? false),
-          activeColor: context.theme.primary,
-          checkColor: context.theme.black,
+          fillColor: WidgetStateProperty.resolveWith((states) {
+            if (!states.contains(WidgetState.selected)) {
+              return context.theme.transparent;
+            }
+            if (states.contains(WidgetState.disabled)) {
+              return context.theme.successSecondary;
+            }
+            return context.theme.primary;
+          }),
+          checkColor: onChanged == null
+              ? context.theme.success
+              : context.theme.black,
           side: BorderSide(color: context.theme.borderDark, width: 1.5),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           visualDensity: VisualDensity.compact,
         ),
         const SizedBox(width: 12),

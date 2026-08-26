@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jupyter_health/app/common/widgets/error_screen.dart';
 import 'package:jupyter_health/app/common/widgets/loading_screen.dart';
-import 'package:jupyter_health/app/common/widgets/styled_app_bar.dart';
-import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 import 'package:jupyter_health/app/pages/dashboard/cubit/dashboard_cubit.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/blood_pressure/blood_pressure_chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/empty_dashboard_widget.dart';
@@ -38,18 +36,17 @@ class DashboardPage extends StatelessWidget {
       child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) => state.map(
           error: (value) => ErrorScreen(
+            hideAppBar: true,
             failure: value.failure,
             onRetry: () => context.read<DashboardCubit>().fetchObservations(),
           ),
-          loading: (_) => const LoadingScreen(),
+          loading: (_) => LoadingScreen(hideAppBar: true),
           data: (value) {
             final isEmpty = _isEmpty(state);
-            return StyledScaffold(
-              appBar: StyledAppBar(),
-              scrollBody: !isEmpty,
-              body: isEmpty
-                  ? EmptyDashboardWidget()
-                  : Center(
+            return isEmpty
+                ? EmptyDashboardWidget()
+                : Center(
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 12,
@@ -110,7 +107,7 @@ class DashboardPage extends StatelessWidget {
                         ],
                       ),
                     ),
-            );
+                  );
           },
         ),
       ),
