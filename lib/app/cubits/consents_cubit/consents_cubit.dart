@@ -8,7 +8,7 @@ import 'package:jupyter_health/domain/repository/api_repository.dart';
 part 'consents_state.dart';
 part 'consents_cubit.freezed.dart';
 
-@injectable
+@Singleton()
 class ConsentsCubit extends Cubit<ConsentsState> {
   final ApiRepository _apiRepository;
 
@@ -20,7 +20,13 @@ class ConsentsCubit extends Cubit<ConsentsState> {
     this.userId = userId;
     if (state.maybeMap(loading: (_) => true, orElse: () => false)) return;
 
-    emit(ConsentsState.loading());
+    if (state.maybeMap(
+      orElse: () => true,
+      consented: (value) => false,
+      consentsPending: (value) => false,
+    )) {
+      emit(ConsentsState.loading());
+    }
     final result = await _apiRepository.getPatientConsents(patientId: userId);
     result.fold((failure) => emit(ConsentsState.error(failure)), (consents) {
       final filteredPending = consents.pending
@@ -31,7 +37,7 @@ class ConsentsCubit extends Cubit<ConsentsState> {
           )
           .toList();
       if (filteredPending.isEmpty) {
-        emit(ConsentsState.consented());
+        emit(ConsentsState.consented(consents.consented));
         return;
       }
       emit(
@@ -69,7 +75,9 @@ class ConsentsCubit extends Cubit<ConsentsState> {
     );
     result.fold(
       (failure) => emit(ConsentsState.error(failure)),
-      (_) => emit(ConsentsState.consented()),
+      (_) => emit(
+        ConsentsState.consented(pendingState.pending + pendingState.consented),
+      ),
     );
   }
 }

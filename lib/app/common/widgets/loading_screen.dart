@@ -4,12 +4,13 @@ import 'package:jupyter_health/app/common/widgets/styled_progress_indicator.dart
 import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({super.key});
+  final bool hideAppBar;
+  const LoadingScreen({super.key, this.hideAppBar = false});
 
   @override
   Widget build(BuildContext context) {
-    return const StyledScaffold(
-      appBar: StyledAppBar(),
+    return StyledScaffold(
+      appBar: hideAppBar ? null : StyledAppBar(),
       body: Center(child: StyledProgressIndicator()),
     );
   }

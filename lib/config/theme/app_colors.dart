@@ -8,6 +8,8 @@ abstract final class AppColors {
   static const primary = Color(0xFFFFDC00);
   static const secondary = Color(0xFFFFF5B9);
   static const loading = Color(0xFFCCB003);
+  static const success = Color(0xFF11974D);
+  static const successSecondary = Color(0xFFE8FAF1);
 
   static const textSecondary = Color(0xFF676F7B);
   static const textTertiary = Color(0xFF495260);
@@ -27,6 +29,8 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
   final Color primary;
   final Color secondary;
   final Color loading;
+  final Color success;
+  final Color successSecondary;
   final Color textSecondary;
   final Color textTertiary;
   final Color backgroundSecondary;
@@ -45,6 +49,8 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     required this.primary,
     required this.secondary,
     required this.loading,
+    required this.success,
+    required this.successSecondary,
     required this.textSecondary,
     required this.textTertiary,
     required this.backgroundSecondary,
@@ -62,6 +68,8 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     primary: AppColors.primary,
     secondary: AppColors.secondary,
     loading: AppColors.loading,
+    success: AppColors.success,
+    successSecondary: AppColors.successSecondary,
     textSecondary: AppColors.textSecondary,
     textTertiary: AppColors.textTertiary,
     backgroundSecondary: AppColors.backgroundSecondary,
@@ -81,6 +89,8 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     Color? primary,
     Color? secondary,
     Color? loading,
+    Color? success,
+    Color? successSecondary,
     Color? textSecondary,
     Color? textTertiary,
     Color? backgroundSecondary,
@@ -97,6 +107,8 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     primary: primary ?? this.primary,
     secondary: secondary ?? this.secondary,
     loading: loading ?? this.loading,
+    success: success ?? this.success,
+    successSecondary: successSecondary ?? this.successSecondary,
     textSecondary: textSecondary ?? this.textSecondary,
     textTertiary: textTertiary ?? this.textTertiary,
     backgroundSecondary: backgroundSecondary ?? this.backgroundSecondary,

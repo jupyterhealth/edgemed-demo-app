@@ -7,12 +7,18 @@ import 'package:jupyter_health/domain/entity/failure.dart';
 class ErrorScreen extends StatelessWidget {
   final Failure failure;
   final void Function() onRetry;
-  const ErrorScreen({super.key, required this.failure, required this.onRetry});
+  final bool hideAppBar;
+  const ErrorScreen({
+    super.key,
+    required this.failure,
+    required this.onRetry,
+    this.hideAppBar = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return StyledScaffold(
-      appBar: StyledAppBar(),
+      appBar: hideAppBar ? null : StyledAppBar(),
       body: Column(
         children: [
           Text(failure.errorMessage(context)),
