@@ -13,6 +13,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: DashboardRoute.page),
     AutoRoute(page: QuestionnaireIntroRoute.page),
     AutoRoute(page: QuestionnaireRoute.page),
-
+    AutoRoute(page: PasscodeRoute.page),
   ];
 }

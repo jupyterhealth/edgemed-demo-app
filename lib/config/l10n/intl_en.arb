@@ -57,5 +57,13 @@
   "daySat": "Sat",
   "daySun": "Sun",
   "timeAm": "am",
-  "timePm": "pm"
+  "timePm": "pm",
+  "setPasscode": "Set your passcode",
+  "setPasscodeDescription": "Enter a 6-digit passcode and tap Save.",
+  "enterPasscode": "Enter your passcode",
+  "enterPasscodeDescription": "Enter your 6-digit passcode to continue.",
+  "passcodeHint": "Enter passcode",
+  "save": "Save",
+  "unlock": "Unlock",
+  "incorrectPasscode": "Incorrect passcode. Try again, or uninstall and reinstall the app."
 }

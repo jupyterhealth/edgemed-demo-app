@@ -2,12 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
-enum _Key { languageCode, encryptionKey, accessToken, refreshToken }
+enum _Key {
+  languageCode,
+  encryptionKey,
+  accessToken,
+  refreshToken,
+  welcomePageShown,
+  passcode,
+  questionnaireCompleted,
+}
 
 @LazySingleton(as: LocalStorageRepository)
 class LocalStorageRepositoryImpl implements LocalStorageRepository {
@@ -86,4 +95,40 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
         key: _Key.refreshToken.name,
         value: refreshToken,
       );
+
+  @override
+  bool getWelcomePageShown() => _box.get(_Key.welcomePageShown.name) ?? false;
+
+  @override
+  Future<void> setWelcomePageShown(bool shown) async =>
+      _box.put(_Key.welcomePageShown.name, shown);
+
+  @override
+  bool comparePasscode({
+    required String rawPasscode,
+    required String hashedPasscode,
+  }) => _hashPasscode(rawPasscode) == hashedPasscode;
+
+  @override
+  Future<String?> getPasscode() async =>
+      await _secureStorage.read(key: _Key.passcode.name);
+
+  @override
+  Future<void> setPasscode(String passcode) async {
+    await _secureStorage.write(
+      key: _Key.passcode.name,
+      value: _hashPasscode(passcode),
+    );
+  }
+
+  String _hashPasscode(String passcode) =>
+      sha256.convert(utf8.encode(passcode)).toString();
+
+  @override
+  bool getQuestionnaireCompleted() =>
+      _box.get(_Key.questionnaireCompleted.name) ?? false;
+
+  @override
+  Future<void> setQuestionnaireCompleted(bool completed) async =>
+      _box.put(_Key.questionnaireCompleted.name, completed);
 }
