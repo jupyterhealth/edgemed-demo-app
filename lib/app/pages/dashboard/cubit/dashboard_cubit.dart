@@ -27,7 +27,10 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   Future<void> fetchObservations() async {
     final generation = ++_requestGeneration;
-    emit(DashboardState.loading());
+    final isRefresh = state.mapOrNull(data: (value) => value) != null;
+    if (!isRefresh) {
+      emit(DashboardState.loading());
+    }
 
     final results = await Future.wait([
       for (final type in _chartTypes)

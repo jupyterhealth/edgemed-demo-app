@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
@@ -104,25 +103,13 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
       _box.put(_Key.welcomePageShown.name, shown);
 
   @override
-  bool comparePasscode({
-    required String rawPasscode,
-    required String hashedPasscode,
-  }) => _hashPasscode(rawPasscode) == hashedPasscode;
-
-  @override
   Future<String?> getPasscode() async =>
       await _secureStorage.read(key: _Key.passcode.name);
 
   @override
   Future<void> setPasscode(String passcode) async {
-    await _secureStorage.write(
-      key: _Key.passcode.name,
-      value: _hashPasscode(passcode),
-    );
+    await _secureStorage.write(key: _Key.passcode.name, value: passcode);
   }
-
-  String _hashPasscode(String passcode) =>
-      sha256.convert(utf8.encode(passcode)).toString();
 
   @override
   bool getQuestionnaireCompleted() =>
@@ -131,4 +118,10 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   @override
   Future<void> setQuestionnaireCompleted(bool completed) async =>
       _box.put(_Key.questionnaireCompleted.name, completed);
+
+  @override
+  Future<void> clear() async {
+    await _secureStorage.deleteAll();
+    await _box.clear();
+  }
 }

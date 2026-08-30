@@ -80,6 +80,7 @@ class _StyledTextFieldState extends State<StyledTextField> {
         maxLength: widget.maxLength,
         inputFormatters: widget.inputFormatters,
         style: context.typography.bodyLarge,
+        obscuringCharacter: '●',
         decoration: InputDecoration(
           suffixIcon: widget.suffixIcon,
           errorText: widget.errorText,

@@ -123,7 +123,6 @@ class _PrivacyTermsPermissionsBodyState
                 ? () => context.read<ConsentsCubit>().submit()
                 : null,
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );

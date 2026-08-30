@@ -16,10 +16,19 @@ class StyledScaffold extends StatelessWidget {
     this.bottomNavigationBar,
   });
 
+  static const _bottomContentPadding = 20.0;
+
   @override
   Widget build(BuildContext context) {
+    final hasBottomNav = bottomNavigationBar != null;
+    final resolvedPadding =
+        padding ?? const EdgeInsets.symmetric(horizontal: 20);
     final body = Padding(
-      padding: padding ?? EdgeInsets.symmetric(horizontal: 20),
+      padding: hasBottomNav
+          ? resolvedPadding
+          : resolvedPadding.add(
+              const EdgeInsets.only(bottom: _bottomContentPadding),
+            ),
       child: this.body,
     );
     return GestureDetector(
@@ -29,6 +38,7 @@ class StyledScaffold extends StatelessWidget {
         bottomNavigationBar: bottomNavigationBar,
         backgroundColor: context.theme.surface,
         body: SafeArea(
+          bottom: !hasBottomNav,
           child: scrollBody ? SingleChildScrollView(child: body) : body,
         ),
       ),

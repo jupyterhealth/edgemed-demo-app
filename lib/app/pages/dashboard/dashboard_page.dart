@@ -44,8 +44,18 @@ class DashboardPage extends StatelessWidget {
           data: (value) {
             final isEmpty = _isEmpty(state);
             return isEmpty
-                ? EmptyDashboardWidget()
-                : Center(
+                ? RefreshIndicator(
+                    onRefresh: () async =>
+                        context.read<DashboardCubit>().fetchObservations(),
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverFillRemaining(child: EmptyDashboardWidget()),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () async =>
+                        context.read<DashboardCubit>().fetchObservations(),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

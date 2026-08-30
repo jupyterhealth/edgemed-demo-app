@@ -16,7 +16,9 @@ class AppStartupCubit extends Cubit<AppStartupState> {
 
   Future<void> initialize() async {
     final isWelcomePageShown = _localStorageRepository.getWelcomePageShown();
-    if (isWelcomePageShown) {
+    await Future.delayed(Duration.zero);
+    if (!isWelcomePageShown) {
+      await _localStorageRepository.setWelcomePageShown(true);
       emit(AppStartupState.welcomePage());
       return;
     }

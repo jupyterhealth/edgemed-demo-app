@@ -34,7 +34,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.loading());
     final result = await _apiRepository.login(invitationCode);
     await result.fold(
-      (l) {
+      (l) async {
+        await _localStorageRepository.clear();
         emit(AuthState.unauthenticated());
       },
       (authToken) async {
