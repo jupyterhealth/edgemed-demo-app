@@ -16,7 +16,10 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = isLoading
-        ? StyledProgressIndicator()
+        ? SizedBox(
+          width: 24,
+          height: 24,
+          child: StyledProgressIndicator())
         : Text(text, style: context.typography.buttonLarge);
     return ElevatedButton(
       style: ElevatedButton.styleFrom(

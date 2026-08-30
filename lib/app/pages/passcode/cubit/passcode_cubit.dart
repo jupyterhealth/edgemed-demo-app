@@ -51,12 +51,7 @@ class PasscodeCubit extends Cubit<PasscodeState> {
         await _localStorageRepository.setPasscode(passcode);
       case PasscodeFlow.unlock:
         final storedPasscode = await _localStorageRepository.getPasscode();
-        final isValid =
-            storedPasscode != null &&
-            _localStorageRepository.comparePasscode(
-              rawPasscode: passcode,
-              hashedPasscode: storedPasscode,
-            );
+        final isValid = storedPasscode != null && storedPasscode == passcode;
         if (!isValid) {
           emit(state.copyWith(isSubmitting: false, hasError: true));
           return;

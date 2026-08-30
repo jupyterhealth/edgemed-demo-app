@@ -46,7 +46,7 @@
   "addFirstObservation": "Add your first observation to get started",
   "emptyDashboardPermissionsHint": "A quick check of UCSF Edge's permissions in Settings may help.",
   "emptyDashboardStep1Prefix": "1. Go to Settings ",
-  "emptyDashboardStep1Suffix": " > Privacy & Security.",
+  "emptyDashboardStep1Suffix": " > Privacy & Security > Health.",
   "emptyDashboardStep2": "2. Tap UCSF Edge app.",
   "emptyDashboardStep3": "3. Review the app's permissions.",
   "dayMon": "Mon",

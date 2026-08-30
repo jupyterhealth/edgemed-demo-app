@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jupyter_health/config/env/env.dart';
+import 'package:jupyter_health/domain/repository/api_repository.dart';
+import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:open_wearables_health_sdk/health_data_type.dart';
 import 'package:open_wearables_health_sdk/open_wearables_health_sdk.dart';
 
@@ -10,36 +14,71 @@ part 'open_wearables_cubit.freezed.dart';
 
 @injectable
 class OpenWearablesCubit extends Cubit<OpenWearablesState> {
-  OpenWearablesCubit() : super(OpenWearablesState.initial());
+  final ApiRepository _apiRepository;
+  final LocalStorageRepository _localStorageRepository;
 
-  void init() async {
-    final status = OpenWearablesHealthSdk.isSyncActive;
-    if (status) {
-      emit(OpenWearablesState.syncing());
-    } else {
-      emit(OpenWearablesState.notConfigured());
-    }
-  }
+  OpenWearablesCubit(this._apiRepository, this._localStorageRepository)
+    : super(OpenWearablesState.initial());
 
-  void configure({
-    required String userAccessToken,
-    required String refreshToken,
-    required int userId,
-  }) async {
-    await OpenWearablesHealthSdk.configure(host: Env.apiBaseUrl);
-    await OpenWearablesHealthSdk.signIn(
-      accessToken: userAccessToken,
-      refreshToken: refreshToken,
-      userId: userId.toString(),
-    );
-    final authorizationResult =
-        await OpenWearablesHealthSdk.requestAuthorization(
-          types: [HealthDataType.bloodGlucose],
+  var _isConfiguring = false;
+
+  static const _authorizationTypes = [HealthDataType.bloodGlucose];
+
+  Future<void> init() async {
+    if (_isConfiguring) return;
+    if (state.maybeMap(initial: (_) => false, orElse: () => true)) return;
+
+    _isConfiguring = true;
+    try {
+      final accessToken = await _localStorageRepository.getAccessToken();
+      final refreshToken = await _localStorageRepository.getRefreshToken();
+      if (accessToken == null || refreshToken == null) {
+        emit(OpenWearablesState.notConfigured());
+        return;
+      }
+
+      final userId = (await _apiRepository.getUser()).fold(
+        (_) => null,
+        (user) => user.id,
+      );
+      if (userId == null) {
+        emit(OpenWearablesState.notConfigured());
+        return;
+      }
+
+      await OpenWearablesHealthSdk.configure(host: Env.apiBaseUrl);
+
+      if (!OpenWearablesHealthSdk.isSignedIn) {
+        await OpenWearablesHealthSdk.signIn(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: userId.toString(),
         );
-    if (authorizationResult) {
-      await OpenWearablesHealthSdk.startBackgroundSync();
-    } else {
+      }
+
+      if (Platform.isAndroid) {
+        await OpenWearablesHealthSdk.setProvider(
+          AndroidHealthProvider.healthConnect,
+        );
+      }
+
+      final authorizationResult =
+          await OpenWearablesHealthSdk.requestAuthorization(
+            types: _authorizationTypes,
+          );
+      if (!authorizationResult) {
+        emit(OpenWearablesState.notConfigured());
+        return;
+      }
+
+      if (!OpenWearablesHealthSdk.isSyncActive) {
+        await OpenWearablesHealthSdk.startBackgroundSync();
+      }
+      emit(OpenWearablesState.syncing());
+    } catch (_) {
       emit(OpenWearablesState.notConfigured());
+    } finally {
+      _isConfiguring = false;
     }
   }
 }
