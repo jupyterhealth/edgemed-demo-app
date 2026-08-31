@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:jupyter_health/app/main_app.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/config/env/env.dart';
@@ -32,7 +33,7 @@ Future<void> _initializeApp({required bool useSentryBinding}) async {
   } else {
     widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   }
-  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp();
   await Future.wait([
     SystemChrome.setPreferredOrientations([

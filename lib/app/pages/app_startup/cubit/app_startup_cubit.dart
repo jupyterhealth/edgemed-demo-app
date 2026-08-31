@@ -15,10 +15,10 @@ class AppStartupCubit extends Cubit<AppStartupState> {
     : super(AppStartupState.initial());
 
   Future<void> initialize() async {
-    final isWelcomePageShown = _localStorageRepository.getWelcomePageShown();
     await Future.delayed(Duration.zero);
-    if (!isWelcomePageShown) {
-      await _localStorageRepository.setWelcomePageShown(true);
+    final isPasscodeExists =
+        (await _localStorageRepository.getPasscode()) != null;
+    if (!isPasscodeExists) {
       emit(AppStartupState.welcomePage());
       return;
     }
@@ -26,16 +26,9 @@ class AppStartupCubit extends Cubit<AppStartupState> {
     final userResponse = await _apiRepository.getUser();
     final isAuthenticated = userResponse.isRight();
     if (isAuthenticated) {
-      final hasPasscode = (await _localStorageRepository.getPasscode()) != null;
-      if (!hasPasscode) {
-        emit(AppStartupState.passcodeSetupMissing());
-        return;
-      } else {
-        emit(AppStartupState.passcodeConfirmationRequired());
-        return;
-      }
+      emit(AppStartupState.passcodeConfirmationRequired());
+      return;
     } else {
-      await _localStorageRepository.setWelcomePageShown(true);
       emit(AppStartupState.welcomePage());
       return;
     }
