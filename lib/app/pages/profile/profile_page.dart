@@ -5,6 +5,7 @@ import 'package:jupyter_health/app/common/widgets/styled_checkbox.dart';
 import 'package:jupyter_health/app/common/widgets/styled_text_field.dart';
 import 'package:jupyter_health/app/common/wrappers/user_wrapper.dart';
 import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
+import 'package:jupyter_health/app/pages/privacy_terms_permissions/widget/privacy_terms_consent_label.dart';
 import 'package:jupyter_health/app/pages/profile/cubit/profile_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
@@ -60,6 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         StyledTextField(
                           controller: _passcodeController,
                           obscureText: _obscureText,
+                          readOnly: true,
                           suffixIcon: IconButton(
                             onPressed: () =>
                                 setState(() => _obscureText = !_obscureText),
@@ -103,6 +105,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ],
                                   ),
                                   orElse: () => SizedBox(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                  ),
+                                  child: StyledCheckbox(
+                                    value: true,
+                                    labelWidget:
+                                        const PrivacyTermsConsentLabel(),
+                                  ),
                                 ),
                               ],
                             ),

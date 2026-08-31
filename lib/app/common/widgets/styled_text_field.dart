@@ -12,6 +12,7 @@ class StyledTextField extends StatefulWidget {
   final String? errorText;
   final Widget? suffixIcon;
   final List<TextInputFormatter>? inputFormatters;
+  final bool readOnly;
 
   const StyledTextField({
     super.key,
@@ -24,6 +25,7 @@ class StyledTextField extends StatefulWidget {
     this.maxLength,
     this.errorText,
     this.inputFormatters,
+    this.readOnly = false,
   });
 
   @override
@@ -39,7 +41,16 @@ class _StyledTextFieldState extends State<StyledTextField> {
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode()..addListener(_handleFocusChange);
+    _focusNode = FocusNode(canRequestFocus: !widget.readOnly)
+      ..addListener(_handleFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant StyledTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.readOnly != widget.readOnly) {
+      _focusNode.canRequestFocus = !widget.readOnly;
+    }
   }
 
   void _handleFocusChange() {
@@ -72,6 +83,8 @@ class _StyledTextFieldState extends State<StyledTextField> {
         ],
       ),
       child: TextField(
+        readOnly: widget.readOnly,
+        enableInteractiveSelection: !widget.readOnly,
         controller: widget.controller,
         focusNode: _focusNode,
         onChanged: widget.onChanged,
