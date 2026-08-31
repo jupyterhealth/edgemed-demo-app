@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Jupyter Health",
+  "appName": "UCSF EdgeMed",
   "retry": "Retry",
   "unauthorized": "Unauthorized",
   "forbidden": "Forbidden",

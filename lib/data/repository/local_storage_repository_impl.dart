@@ -12,7 +12,6 @@ enum _Key {
   encryptionKey,
   accessToken,
   refreshToken,
-  welcomePageShown,
   passcode,
   questionnaireCompleted,
 }
@@ -75,6 +74,14 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   Future<void> setLocale(Locale locale) async =>
       _box.put(_Key.languageCode.name, locale.languageCode);
 
+  @override
+  bool getQuestionnaireCompleted() =>
+      _box.get(_Key.questionnaireCompleted.name) ?? false;
+
+  @override
+  Future<void> setQuestionnaireCompleted(bool completed) async =>
+      _box.put(_Key.questionnaireCompleted.name, completed);
+
   // Secure Storage
   @override
   Future<String?> getAccessToken() async =>
@@ -96,13 +103,6 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
       );
 
   @override
-  bool getWelcomePageShown() => _box.get(_Key.welcomePageShown.name) ?? false;
-
-  @override
-  Future<void> setWelcomePageShown(bool shown) async =>
-      _box.put(_Key.welcomePageShown.name, shown);
-
-  @override
   Future<String?> getPasscode() async =>
       await _secureStorage.read(key: _Key.passcode.name);
 
@@ -110,14 +110,6 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   Future<void> setPasscode(String passcode) async {
     await _secureStorage.write(key: _Key.passcode.name, value: passcode);
   }
-
-  @override
-  bool getQuestionnaireCompleted() =>
-      _box.get(_Key.questionnaireCompleted.name) ?? false;
-
-  @override
-  Future<void> setQuestionnaireCompleted(bool completed) async =>
-      _box.put(_Key.questionnaireCompleted.name, completed);
 
   @override
   Future<void> clear() async {
