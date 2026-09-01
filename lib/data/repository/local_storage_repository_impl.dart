@@ -7,14 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
-enum _Key {
-  languageCode,
-  encryptionKey,
-  accessToken,
-  refreshToken,
-  passcode,
-  questionnaireCompleted,
-}
+enum _Key { languageCode, encryptionKey, accessToken, refreshToken, passcode }
 
 @LazySingleton(as: LocalStorageRepository)
 class LocalStorageRepositoryImpl implements LocalStorageRepository {
@@ -73,14 +66,6 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
   @override
   Future<void> setLocale(Locale locale) async =>
       _box.put(_Key.languageCode.name, locale.languageCode);
-
-  @override
-  bool getQuestionnaireCompleted() =>
-      _box.get(_Key.questionnaireCompleted.name) ?? false;
-
-  @override
-  Future<void> setQuestionnaireCompleted(bool completed) async =>
-      _box.put(_Key.questionnaireCompleted.name, completed);
 
   // Secure Storage
   @override

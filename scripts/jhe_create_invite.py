@@ -3,6 +3,9 @@
 
 Usage:
   python3 scripts/jhe_create_invite.py
+
+For an invitation link only (existing patient, no redeem):
+  python3 scripts/jhe_invite_existing.py --patient-id 40001
 """
 
 from __future__ import annotations
@@ -34,12 +37,15 @@ OAUTH_REDIRECT_URI = f"{BASE_URL}/auth/callback"
 
 # Org / study / invitation client (DB primary keys from /api/v1/...)
 ORGANIZATION_ID = 20003  # Lifespan Lab
-STUDY_ID = 30001  # Lifespan Study on BP & HR (set None to skip enroll)
+# Must be in the same org as the patient. JHE rejects cross-org enrollment
+# (e.g. 30003 Cardiology Division will 500 for Lifespan Lab patients).
+STUDY_ID = 30007  # test study — glucose, BP, steps, sleep
+# STUDY_ID = 30001  # Lifespan Study on BP & HR (now includes blood glucose)
 INVITATION_CLIENT_ID = 1  # CareX (Application.id, not clientId string)
 
 # New patient — email must be unused for a *new* user.
 # If this email already has a patient, script reuses them (see REUSE_EXISTING_BY_EMAIL).
-PATIENT_EMAIL = "test.patient+1@example.com"
+PATIENT_EMAIL = "test.patient+88@example.com"
 PATIENT_GIVEN = "Test"
 PATIENT_FAMILY = "Patient"
 PATIENT_BIRTH_DATE = "1990-01-01"
@@ -309,23 +315,37 @@ def resolve_patient_id(practitioner_token: str) -> int:
     )
 
 
+def enroll_in_study(
+    practitioner_token: str, patient_id: int, study_id: int | None
+) -> None:
+    if study_id is None:
+        return
+    status, _ = api(
+        "POST",
+        f"/api/v1/studies/{study_id}/patients",
+        practitioner_token,
+        data={"patient_ids": [patient_id]},
+        raise_on_error=False,
+    )
+    # 4xx: typically already enrolled. 5xx: often patient/study org mismatch.
+    if status >= 500:
+        raise RuntimeError(
+            f"Study enrollment failed ({status}). Patient and study must be "
+            f"in the same organization (org={ORGANIZATION_ID}, study={study_id})."
+        )
+    if status >= 400:
+        print(f"\nStudy enroll returned {status} (already enrolled?); continuing.")
+
+
 def main() -> int:
     print(f"BASE_URL={BASE_URL}")
     print(f"practitioner={PRACTITIONER_EMAIL}")
     print(f"patient_email={PATIENT_EMAIL}")
+    print(f"study_id={STUDY_ID}")
 
     practitioner_token = login_practitioner()
     patient_id = resolve_patient_id(practitioner_token)
-
-    if STUDY_ID is not None:
-        # Already-enrolled patients may 400; invitation still works either way.
-        api(
-            "POST",
-            f"/api/v1/studies/{STUDY_ID}/patients",
-            practitioner_token,
-            data={"patient_ids": [patient_id]},
-            raise_on_error=False,
-        )
+    enroll_in_study(practitioner_token, patient_id, STUDY_ID)
 
     _, invitation = api(
         "POST",
@@ -372,6 +392,7 @@ def main() -> int:
     print("SUMMARY")
     print("#" * 72)
     print(f"patient_id:        {patient_id}")
+    print(f"study_id:          {STUDY_ID}")
     print(f"invitation_token:  {invite_token}")
     print(f"invitation_link:   {invitation.get('invitationLink') or invitation.get('invitation_link')}")
     print(f"access_token:      {token_body.get('access_token')}")

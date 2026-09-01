@@ -57,6 +57,14 @@ abstract class ApiDataSource {
     @Body() required QuestionnaireResponseDto body,
   });
 
+  @GET('/FHIR/R5/QuestionnaireResponse')
+  Future<HttpResponse<QuestionnaireResponseBundleDto>>
+  getQuestionnaireResponses({
+    @Query('patient') required int patient,
+    @Query('status') required String status,
+    @Query('_summary') required String summary,
+  });
+
   @GET('/FHIR/R5/Observation')
   Future<HttpResponse<ObservationBundleDto>> getObservations({
     @Query('code') required String code,

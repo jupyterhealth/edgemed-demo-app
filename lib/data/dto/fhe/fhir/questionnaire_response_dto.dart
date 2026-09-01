@@ -6,6 +6,19 @@ part 'questionnaire_response_dto.freezed.dart';
 part 'questionnaire_response_dto.g.dart';
 
 @freezed
+abstract class QuestionnaireResponseBundleDto
+    with _$QuestionnaireResponseBundleDto {
+  const factory QuestionnaireResponseBundleDto({
+    required String resourceType,
+    required String type,
+    @Default(0) int total,
+  }) = _QuestionnaireResponseBundleDto;
+
+  factory QuestionnaireResponseBundleDto.fromJson(Map<String, dynamic> json) =>
+      _$QuestionnaireResponseBundleDtoFromJson(json);
+}
+
+@freezed
 abstract class QuestionnaireResponseDto with _$QuestionnaireResponseDto {
   const QuestionnaireResponseDto._();
 

@@ -198,6 +198,20 @@ class ApiRepositoryImpl implements ApiRepository {
   );
 
   @override
+  Future<Either<Failure, bool>> hasCompletedQuestionnaire({
+    required int patientId,
+  }) => safeApiCall(
+    apiCall: () async {
+      final response = await _apiDataSource.getQuestionnaireResponses(
+        patient: patientId,
+        status: 'completed',
+        summary: 'count',
+      );
+      return response.data.total > 0;
+    },
+  );
+
+  @override
   Future<Either<Failure, AuthToken>> login(String invitationCode) =>
       safeApiCall(
         apiCall: () async {

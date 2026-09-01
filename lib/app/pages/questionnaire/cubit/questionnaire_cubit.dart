@@ -5,7 +5,6 @@ import 'package:jupyter_health/app/pages/questionnaire/data/questionnaire.dart';
 import 'package:jupyter_health/domain/entity/failure.dart';
 import 'package:jupyter_health/domain/entity/questionnaire/question.dart';
 import 'package:jupyter_health/domain/repository/api_repository.dart';
-import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 
 part 'questionnaire_state.dart';
 part 'questionnaire_cubit.freezed.dart';
@@ -13,9 +12,8 @@ part 'questionnaire_cubit.freezed.dart';
 @injectable
 class QuestionnaireCubit extends Cubit<QuestionnaireState> {
   final ApiRepository _apiRepository;
-  final LocalStorageRepository _localStorageRepository;
 
-  QuestionnaireCubit(this._apiRepository, this._localStorageRepository)
+  QuestionnaireCubit(this._apiRepository)
     : super(QuestionnaireState(currentQuestion: 0, questions: questionnaire));
 
   bool get canGoNext => state.questions[state.currentQuestion].map(
@@ -34,8 +32,9 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
 
     question.map(
       optionalMultipleChoice: (multipleChoiceQuestion) {
-        final selectedAnswers =
-            multipleChoiceQuestion.selectedAnswers == null ? <String>[] : null;
+        final selectedAnswers = multipleChoiceQuestion.selectedAnswers == null
+            ? <String>[]
+            : null;
 
         final updatedQuestions = [...state.questions];
         updatedQuestions[index] = multipleChoiceQuestion.copyWith(
@@ -125,10 +124,7 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
     await result.fold(
       (failure) async =>
           emit(state.copyWith(isSubmitting: false, failure: failure)),
-      (_) async {
-        await _localStorageRepository.setQuestionnaireCompleted(true);
-        emit(state.copyWith(isSubmitting: false, submitted: true));
-      },
+      (_) async => emit(state.copyWith(isSubmitting: false, submitted: true)),
     );
   }
 }

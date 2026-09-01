@@ -5,6 +5,7 @@ import 'package:jupyter_health/app/common/widgets/error_screen.dart';
 import 'package:jupyter_health/app/common/widgets/loading_screen.dart';
 import 'package:jupyter_health/app/common/wrappers/user_wrapper.dart';
 import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
+import 'package:jupyter_health/app/cubits/open_wearables/open_wearables_cubit.dart';
 import 'package:jupyter_health/app/pages/privacy_terms_permissions/widget/privacy_terms_permissions_body.dart';
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
 
@@ -20,8 +21,11 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
         child: BlocConsumer<ConsentsCubit, ConsentsState>(
           listener: (context, consentsState) {
             consentsState.whenOrNull(
-              consented: (_) {
-                context.router.replaceAll([const NavigationRoute()]);
+              consented: (_) async {
+                await context.read<OpenWearablesCubit>().init();
+                if (context.mounted) {
+                  context.router.replaceAll([const NavigationRoute()]);
+                }
               },
             );
           },

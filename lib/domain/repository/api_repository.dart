@@ -26,4 +26,7 @@ abstract class ApiRepository {
     required int patientId,
     required List<Question> questions,
   });
+  Future<Either<Failure, bool>> hasCompletedQuestionnaire({
+    required int patientId,
+  });
 }
