@@ -2,7 +2,7 @@ part of 'passcode_cubit.dart';
 
 enum PasscodeFlow { setup, unlock }
 
-enum PasscodeNextRoute { questionnaire, consents, dashboard }
+enum PasscodeNextRoute { welcome, questionnaire, consents, dashboard }
 
 @freezed
 abstract class PasscodeState with _$PasscodeState {

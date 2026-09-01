@@ -63,14 +63,21 @@ class PasscodeCubit extends Cubit<PasscodeState> {
   }
 
   Future<PasscodeNextRoute> _resolveNextRoute() async {
-    if (!_localStorageRepository.getQuestionnaireCompleted()) {
-      return PasscodeNextRoute.questionnaire;
-    }
-
     final userResult = await _apiRepository.getUser();
     final userId = userResult.fold((_) => null, (user) => user.id);
     if (userId == null) {
-      return PasscodeNextRoute.consents;
+      return PasscodeNextRoute.welcome;
+    }
+
+    final questionnaireResult = await _apiRepository.hasCompletedQuestionnaire(
+      patientId: userId,
+    );
+    final hasCompletedQuestionnaire = questionnaireResult.fold(
+      (_) => false,
+      (isCompleted) => isCompleted,
+    );
+    if (!hasCompletedQuestionnaire) {
+      return PasscodeNextRoute.questionnaire;
     }
 
     final consentsResult = await _apiRepository.getPatientConsents(

@@ -10,7 +10,5 @@ abstract class LocalStorageRepository {
   Future<void> setRefreshToken(String refreshToken);
   Future<String?> getPasscode();
   Future<void> setPasscode(String passcode);
-  bool getQuestionnaireCompleted();
-  Future<void> setQuestionnaireCompleted(bool completed);
   Future<void> clear();
 }

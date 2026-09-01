@@ -8,8 +8,33 @@ import 'package:jupyter_health/app/cubits/open_wearables/open_wearables_cubit.da
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
 
 @RoutePage()
-class NavigationPage extends StatelessWidget {
+class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
+
+  @override
+  State<NavigationPage> createState() => _NavigationPageState();
+}
+
+class _NavigationPageState extends State<NavigationPage>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused && mounted) {
+      context.router.replaceAll([const PasscodeRoute()]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -33,6 +33,7 @@ class _PasscodePageState extends State<PasscodePage> {
             previous.nextRoute == null && current.nextRoute != null,
         listener: (context, state) {
           final route = switch (state.nextRoute!) {
+            PasscodeNextRoute.welcome => const WelcomeRoute(),
             PasscodeNextRoute.questionnaire => const QuestionnaireIntroRoute(),
             PasscodeNextRoute.consents => const PrivacyTermsPermissionsRoute(),
             PasscodeNextRoute.dashboard => const NavigationRoute(),
