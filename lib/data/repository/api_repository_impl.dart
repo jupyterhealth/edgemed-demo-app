@@ -233,4 +233,12 @@ class ApiRepositoryImpl implements ApiRepository {
           return tokenResponse.data.toDomain();
         },
       );
+
+  @override
+  Future<Either<Failure, String>> createOwUser() => safeApiCall(
+    apiCall: () async {
+      final response = await _apiDataSource.createOwUser();
+      return response.data.owUserId;
+    },
+  );
 }
