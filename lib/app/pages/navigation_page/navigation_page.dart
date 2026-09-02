@@ -52,7 +52,7 @@ class _NavigationPageState extends State<NavigationPage>
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Dashboard',
+                  label: 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),

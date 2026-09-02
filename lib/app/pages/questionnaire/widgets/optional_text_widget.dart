@@ -49,6 +49,7 @@ class _OptionalTextWidgetState extends State<OptionalTextWidget> {
           StyledTextField(
             controller: _controller,
             onChanged: widget.onAnswerChanged,
+            maxLength: 300,
             hintText: 'Start typing...',
           ),
         ],

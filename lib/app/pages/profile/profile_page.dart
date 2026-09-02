@@ -92,14 +92,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                 state.maybeMap(
                                   consented: (data) => Column(
                                     children: [
-                                      for (var consent in data.consented)
+                                      for (var consent
+                                          in data.freshConsents +
+                                              data.oldConsents)
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 4,
                                           ),
                                           child: StyledCheckbox(
                                             value: true,
-                                            label: consent.codingCode,
+                                            label: consent.text,
                                           ),
                                         ),
                                     ],
