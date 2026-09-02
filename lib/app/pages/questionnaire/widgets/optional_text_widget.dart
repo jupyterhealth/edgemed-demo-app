@@ -21,6 +21,9 @@ class OptionalTextWidget extends StatefulWidget {
 }
 
 class _OptionalTextWidgetState extends State<OptionalTextWidget> {
+  static const _maxSymbols = 300;
+  static const _maxSymbolsHint = 'Max. number of symbols: $_maxSymbols';
+
   late final TextEditingController _controller;
 
   @override
@@ -48,9 +51,15 @@ class _OptionalTextWidgetState extends State<OptionalTextWidget> {
           const SizedBox(height: 16),
           StyledTextField(
             controller: _controller,
-            onChanged: widget.onAnswerChanged,
-            maxLength: 300,
+            onChanged: (value) {
+              setState(() {});
+              widget.onAnswerChanged(value);
+            },
             hintText: 'Start typing...',
+            helperText: _maxSymbolsHint,
+            errorText: _controller.text.length > _maxSymbols
+                ? _maxSymbolsHint
+                : null,
           ),
         ],
       ),

@@ -21,7 +21,10 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
       final selectedAnswers = question.selectedAnswers;
       return selectedAnswers == null || selectedAnswers.isNotEmpty;
     },
-    optionalText: (_) => true,
+    optionalText: (question) {
+      final answer = question.answer;
+      return answer == null || answer.length <= 300;
+    },
   );
 
   void toggleMultipleChoiceNone() {
