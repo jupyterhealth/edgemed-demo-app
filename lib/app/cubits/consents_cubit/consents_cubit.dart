@@ -37,7 +37,12 @@ class ConsentsCubit extends Cubit<ConsentsState> {
           )
           .toList();
       if (filteredPending.isEmpty) {
-        emit(ConsentsState.consented(consents.consented));
+        emit(
+          ConsentsState.consented(
+            freshConsents: [],
+            oldConsents: consents.consented,
+          ),
+        );
         return;
       }
       emit(
@@ -76,7 +81,10 @@ class ConsentsCubit extends Cubit<ConsentsState> {
     result.fold(
       (failure) => emit(ConsentsState.error(failure)),
       (_) => emit(
-        ConsentsState.consented(pendingState.pending + pendingState.consented),
+        ConsentsState.consented(
+          freshConsents: pendingState.pending,
+          oldConsents: pendingState.consented,
+        ),
       ),
     );
   }

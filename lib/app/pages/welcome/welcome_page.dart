@@ -47,8 +47,7 @@ class WelcomePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Button(
                   text: T(context).getStarted,
-                  onPressed: () =>
-                      context.router.replace(QuestionnaireIntroRoute()),
+                  onPressed: () => context.router.replace(PasscodeRoute()),
                 ),
               ),
           ],

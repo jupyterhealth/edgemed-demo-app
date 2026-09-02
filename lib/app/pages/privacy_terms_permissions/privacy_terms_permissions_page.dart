@@ -20,7 +20,7 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
         value: context.read<ConsentsCubit>()..init(user.id),
         child: BlocConsumer<ConsentsCubit, ConsentsState>(
           listener: (context, consentsState) {
-            consentsState.whenOrNull(
+            consentsState.mapOrNull(
               consented: (_) async {
                 await context.read<OpenWearablesCubit>().init();
                 if (context.mounted) {
@@ -40,6 +40,12 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
               pending: value.pending,
               selected: value.selected,
               isSubmitting: value.isSubmitting,
+            ),
+            consented: (value) => PrivacyTermsPermissionsBody(
+              consented: value.freshConsents,
+              pending: value.freshConsents,
+              selected: value.oldConsents + value.freshConsents,
+              isSubmitting: true,
             ),
           ),
         ),
