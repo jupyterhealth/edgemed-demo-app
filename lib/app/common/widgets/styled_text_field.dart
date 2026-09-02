@@ -9,6 +9,7 @@ class StyledTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final bool obscureText;
   final int? maxLength;
+  final String? helperText;
   final String? errorText;
   final Widget? suffixIcon;
   final List<TextInputFormatter>? inputFormatters;
@@ -23,6 +24,7 @@ class StyledTextField extends StatefulWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.maxLength,
+    this.helperText,
     this.errorText,
     this.inputFormatters,
     this.readOnly = false,
@@ -69,63 +71,81 @@ class _StyledTextFieldState extends State<StyledTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(_borderRadius),
-        boxShadow: [
-          if (_isFocused)
-            BoxShadow(
-              color: context.theme.backgroundSecondary,
-              offset: Offset.zero,
-              blurRadius: 0,
-              spreadRadius: 4,
+    final hasError = widget.errorText != null;
+    final supportingText = widget.errorText ?? widget.helperText;
+    final borderColor = hasError ? context.theme.error : context.theme.border;
+    final focusedBorderColor = hasError
+        ? context.theme.error
+        : context.theme.borderActive;
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(_borderRadius),
+      borderSide: BorderSide(color: borderColor),
+    );
+    final focusedBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(_borderRadius),
+      borderSide: BorderSide(color: focusedBorderColor),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(_borderRadius),
+            boxShadow: [
+              if (_isFocused)
+                BoxShadow(
+                  color: context.theme.backgroundSecondary,
+                  offset: Offset.zero,
+                  blurRadius: 0,
+                  spreadRadius: 4,
+                ),
+            ],
+          ),
+          child: TextField(
+            readOnly: widget.readOnly,
+            enableInteractiveSelection: !widget.readOnly,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            onChanged: widget.onChanged,
+            keyboardType: widget.keyboardType,
+            obscureText: widget.obscureText,
+            maxLength: widget.maxLength,
+            inputFormatters: widget.inputFormatters,
+            style: context.typography.bodyLarge,
+            obscuringCharacter: '●',
+            decoration: InputDecoration(
+              suffixIcon: widget.suffixIcon,
+              hintText: widget.hintText,
+              hintStyle: context.typography.bodyLarge.copyWith(
+                color: context.theme.textSecondary,
+              ),
+              filled: true,
+              fillColor: context.theme.surface,
+              counterText: widget.maxLength == null ? null : '',
+              border: border,
+              enabledBorder: border,
+              focusedBorder: focusedBorder,
+              contentPadding: const EdgeInsets.all(12),
             ),
-        ],
-      ),
-      child: TextField(
-        readOnly: widget.readOnly,
-        enableInteractiveSelection: !widget.readOnly,
-        controller: widget.controller,
-        focusNode: _focusNode,
-        onChanged: widget.onChanged,
-        keyboardType: widget.keyboardType,
-        obscureText: widget.obscureText,
-        maxLength: widget.maxLength,
-        inputFormatters: widget.inputFormatters,
-        style: context.typography.bodyLarge,
-        obscuringCharacter: '●',
-        decoration: InputDecoration(
-          suffixIcon: widget.suffixIcon,
-          errorText: widget.errorText,
-          errorStyle: context.typography.bodySmall.copyWith(
-            color: context.theme.error,
           ),
-          hintText: widget.hintText,
-          hintStyle: context.typography.bodyLarge.copyWith(
-            color: context.theme.textSecondary,
-          ),
-          filled: true,
-          fillColor: context.theme.surface,
-          counterText: widget.maxLength == null ? null : '',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(_borderRadius),
-            borderSide: BorderSide(color: context.theme.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(_borderRadius),
-            borderSide: BorderSide(color: context.theme.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(_borderRadius),
-            borderSide: BorderSide(color: context.theme.borderActive),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(_borderRadius),
-            borderSide: BorderSide(color: context.theme.error),
-          ),
-          contentPadding: const EdgeInsets.all(12),
         ),
-      ),
+        if (supportingText != null) ...[
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              supportingText,
+              style: context.typography.bodySmall.copyWith(
+                color: hasError
+                    ? context.theme.error
+                    : context.theme.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
