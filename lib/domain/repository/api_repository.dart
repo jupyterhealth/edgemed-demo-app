@@ -29,4 +29,5 @@ abstract class ApiRepository {
   Future<Either<Failure, bool>> hasCompletedQuestionnaire({
     required int patientId,
   });
+  Future<Either<Failure, String>> createOwUser();
 }

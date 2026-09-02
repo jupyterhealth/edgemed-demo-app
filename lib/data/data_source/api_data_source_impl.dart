@@ -7,6 +7,7 @@ import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dar
 import 'package:jupyter_health/data/dto/fhe/fhir/fhir_source_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/observation_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/questionnaire_response_dto.dart';
+import 'package:jupyter_health/data/dto/ow/create_ow_user_response_dto.dart';
 import 'package:jupyter_health/domain/entity/user.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -76,4 +77,7 @@ abstract class ApiDataSource {
   Future<HttpResponse<ObservationBundleDto>> getObservationsByUrl(
     @Path('url') String url,
   );
+
+  @POST('/api/v1/ow/users')
+  Future<HttpResponse<CreateOwUserResponseDto>> createOwUser();
 }
