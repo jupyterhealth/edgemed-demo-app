@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/blood_pressure/blood_pressure_chart.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/chart_box.dart';
-import 'package:jupyter_health/app/pages/dashboard/widget/mode_switch.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/domain/entity/observations/observation.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_data.dart';
@@ -26,7 +25,6 @@ class BloodPressureChartBox extends StatefulWidget {
 
 class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
   Observation? _selectedObservation;
-  bool _mode = true;
 
   @override
   void initState() {
@@ -46,28 +44,19 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    T(context).bloodPressure,
-                    style: context.typography.bodyLarge,
-                  ),
-                  if (widget.isLoadingMore) ...[
-                    const SizedBox(width: 8),
-                    const SizedBox(
-                      width: 12,
-                      height: 12,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ],
-                ],
+              Text(
+                T(context).bloodPressure,
+                style: context.typography.bodyLarge,
               ),
-              ModeSwitch(
-                value: _mode,
-                onChanged: (value) => setState(() => _mode = value),
-              ),
+              if (widget.isLoadingMore) ...[
+                const SizedBox(width: 8),
+                const SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ],
             ],
           ),
           SizedBox(height: 8),
@@ -130,11 +119,9 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
               Text(
                 _selectedObservation == null
                     ? ''
-                    : T(context).measured(
-                        _selectedObservation!.date.toMeasuredLabel(
-                          isHourly: _mode,
-                        ),
-                      ),
+                    : T(
+                        context,
+                      ).measured(_selectedObservation!.date.toMeasuredLabel()),
                 style: context.typography.bodySmall.copyWith(
                   color: colors.textSecondary,
                 ),
@@ -143,7 +130,6 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
           ),
           SizedBox(height: 12),
           BloodPressureChart(
-            isHourly: _mode,
             onObservationSelected: (observation) =>
                 setState(() => _selectedObservation = observation),
             observations: widget.observations,

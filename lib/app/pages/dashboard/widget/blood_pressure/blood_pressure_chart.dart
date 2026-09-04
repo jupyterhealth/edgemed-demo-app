@@ -10,14 +10,12 @@ class BloodPressureChart extends StatelessWidget {
   static const diastolicColor = Color(0xFF9B8BC4);
 
   final List<Observation> observations;
-  final bool isHourly;
   final void Function(Observation observation) onObservationSelected;
   final VoidCallback? onLoadMore;
 
   const BloodPressureChart({
     super.key,
     required this.observations,
-    required this.isHourly,
     required this.onObservationSelected,
     this.onLoadMore,
   });
@@ -31,29 +29,15 @@ class BloodPressureChart extends StatelessWidget {
 
     final origin = ChartAxis.chartOrigin(
       firstDate: points.first.date,
-      isHourly: isHourly,
+      isHourly: false,
     );
-    final selectablePoints = isHourly
-        ? _hourlyPoints(points, origin)
-        : _dailyPoints(points, origin);
-    final systolicSpots = isHourly
-        ? [
-            for (final point in points)
-              FlSpot(
-                point.date.difference(origin).inMinutes.toDouble(),
-                point.systolic,
-              ),
-          ]
-        : [for (final point in selectablePoints) point.systolicSpot];
-    final diastolicSpots = isHourly
-        ? [
-            for (final point in points)
-              FlSpot(
-                point.date.difference(origin).inMinutes.toDouble(),
-                point.diastolic,
-              ),
-          ]
-        : [for (final point in selectablePoints) point.diastolicSpot];
+    final selectablePoints = _dailyPoints(points, origin);
+    final systolicSpots = [
+      for (final point in selectablePoints) point.systolicSpot,
+    ];
+    final diastolicSpots = [
+      for (final point in selectablePoints) point.diastolicSpot,
+    ];
 
     if (selectablePoints.isEmpty ||
         systolicSpots.isEmpty ||
@@ -62,7 +46,7 @@ class BloodPressureChart extends StatelessWidget {
     }
 
     return ScrollableLineChart<Observation>(
-      isHourly: isHourly,
+      isHourly: false,
       origin: origin,
       dataMaxX: systolicSpots.last.x,
       ySpots: [...systolicSpots, ...diastolicSpots],
@@ -73,18 +57,17 @@ class BloodPressureChart extends StatelessWidget {
       onPointSelected: onObservationSelected,
       onReachOlderData: onLoadMore,
       buildSeries: (chartContext) {
-        final maxGap = ChartAxis.snapInterval(isHourly: isHourly);
         final isolatedXs = ChartAxis.isolatedSpotXs(
           systolicSpots,
-          maxGap: maxGap,
+          maxGap: ChartAxis.minutesPerDay,
         );
         final gappedDiastolic = ChartAxis.spotsWithGaps(
           diastolicSpots,
-          maxGap: maxGap,
+          maxGap: ChartAxis.minutesPerDay,
         );
         final gappedSystolic = ChartAxis.spotsWithGaps(
           systolicSpots,
-          maxGap: maxGap,
+          maxGap: ChartAxis.minutesPerDay,
         );
         return [
           _series(
@@ -92,7 +75,6 @@ class BloodPressureChart extends StatelessWidget {
             isolatedXs: isolatedXs,
             color: diastolicColor,
             chartContext: chartContext,
-            isCurved: isHourly,
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
@@ -110,7 +92,6 @@ class BloodPressureChart extends StatelessWidget {
             isolatedXs: isolatedXs,
             color: chartContext.colors.primary,
             chartContext: chartContext,
-            isCurved: isHourly,
           ),
         ];
       },
@@ -163,59 +144,6 @@ class BloodPressureChart extends StatelessWidget {
 
     points.sort((a, b) => a.date.compareTo(b.date));
     return points;
-  }
-
-  List<({FlSpot systolicSpot, FlSpot diastolicSpot, Observation observation})>
-  _hourlyPoints(
-    List<
-      ({
-        DateTime date,
-        double systolic,
-        double diastolic,
-        Observation observation,
-      })
-    >
-    points,
-    DateTime origin,
-  ) {
-    final bestByHour =
-        <
-          int,
-          ({
-            FlSpot systolicSpot,
-            FlSpot diastolicSpot,
-            Observation observation,
-            int distance,
-          })
-        >{};
-
-    for (final point in points) {
-      final minutes = point.date.difference(origin).inMinutes;
-      final nearestHour = (minutes / ChartAxis.minutesPerHour).round();
-      final distance = (minutes - nearestHour * ChartAxis.minutesPerHour)
-          .abs()
-          .toInt();
-      final existing = bestByHour[nearestHour];
-
-      if (existing == null || distance < existing.distance) {
-        bestByHour[nearestHour] = (
-          systolicSpot: FlSpot(minutes.toDouble(), point.systolic),
-          diastolicSpot: FlSpot(minutes.toDouble(), point.diastolic),
-          observation: point.observation,
-          distance: distance,
-        );
-      }
-    }
-
-    final hours = bestByHour.keys.toList()..sort();
-    return [
-      for (final hour in hours)
-        (
-          systolicSpot: bestByHour[hour]!.systolicSpot,
-          diastolicSpot: bestByHour[hour]!.diastolicSpot,
-          observation: bestByHour[hour]!.observation,
-        ),
-    ];
   }
 
   List<({FlSpot systolicSpot, FlSpot diastolicSpot, Observation observation})>
@@ -285,11 +213,9 @@ class BloodPressureChart extends StatelessWidget {
     required Set<double> isolatedXs,
     required Color color,
     required ScrollableChartContext chartContext,
-    required bool isCurved,
     BarAreaData? belowBarData,
   }) => LineChartBarData(
-    isCurved: isCurved,
-    curveSmoothness: 0.25,
+    isCurved: false,
     color: color,
     barWidth: 2,
     isStrokeCapRound: true,
