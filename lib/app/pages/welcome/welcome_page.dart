@@ -16,7 +16,17 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        state.mapOrNull(
+          error: (value) => context.pushRoute(
+            ErrorRoute(
+              failure: value.failure,
+              onRetry: (ctx) => ctx.maybePop(),
+            ),
+          ),
+        );
+      },
       builder: (context, state) => StyledScaffold(
         appBar: StyledAppBar(),
         padding: EdgeInsets.zero,
@@ -42,14 +52,23 @@ class WelcomePage extends StatelessWidget {
                 ],
               ),
             ),
-            if (state.maybeMap(orElse: () => false, authenticated: (_) => true))
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Visibility(
+                visible: state.maybeMap(
+                  orElse: () => false,
+                  authenticated: (_) => true,
+                ),
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: true,
                 child: Button(
                   text: T(context).getStarted,
                   onPressed: () => context.router.replace(PasscodeRoute()),
                 ),
               ),
+            ),
           ],
         ),
       ),

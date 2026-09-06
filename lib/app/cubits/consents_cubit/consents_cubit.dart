@@ -36,6 +36,7 @@ class ConsentsCubit extends Cubit<ConsentsState> {
                 element.codingCode == 'QuestionnaireResponse',
           )
           .toList();
+
       if (filteredPending.isEmpty) {
         emit(
           ConsentsState.consented(
@@ -82,7 +83,7 @@ class ConsentsCubit extends Cubit<ConsentsState> {
       (failure) => emit(ConsentsState.error(failure)),
       (_) => emit(
         ConsentsState.consented(
-          freshConsents: pendingState.pending,
+          freshConsents: pendingState.selected,
           oldConsents: pendingState.consented,
         ),
       ),

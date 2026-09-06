@@ -46,6 +46,7 @@ class _NavigationPageState extends State<NavigationPage>
           final tabsRouter = AutoTabsRouter.of(context);
           return StyledScaffold(
             appBar: StyledAppBar(),
+            padding: EdgeInsets.zero,
             bottomNavigationBar: StyledBottomNavigationBar(
               currentIndex: tabsRouter.activeIndex,
               onTap: tabsRouter.setActiveIndex,

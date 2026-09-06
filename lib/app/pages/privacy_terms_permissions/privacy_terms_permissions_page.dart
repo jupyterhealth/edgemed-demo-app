@@ -1,11 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jupyter_health/app/common/widgets/error_screen.dart';
 import 'package:jupyter_health/app/common/widgets/loading_screen.dart';
 import 'package:jupyter_health/app/common/wrappers/user_wrapper.dart';
 import 'package:jupyter_health/app/cubits/consents_cubit/consents_cubit.dart';
 import 'package:jupyter_health/app/cubits/open_wearables/open_wearables_cubit.dart';
+import 'package:jupyter_health/app/pages/error_page/error_page.dart';
 import 'package:jupyter_health/app/pages/privacy_terms_permissions/widget/privacy_terms_permissions_body.dart';
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
 
@@ -31,9 +31,9 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
           },
           builder: (context, consentsState) => consentsState.maybeMap(
             orElse: () => const LoadingScreen(),
-            error: (value) => ErrorScreen(
+            error: (value) => ErrorPage(
               failure: value.failure,
-              onRetry: () => context.read<ConsentsCubit>().init(user.id),
+              onRetry: (_) => context.read<ConsentsCubit>().init(user.id),
             ),
             consentsPending: (value) => PrivacyTermsPermissionsBody(
               consented: value.consented,
@@ -42,9 +42,9 @@ class PrivacyTermsPermissionsPage extends StatelessWidget {
               isSubmitting: value.isSubmitting,
             ),
             consented: (value) => PrivacyTermsPermissionsBody(
+              pending: [],
               consented: value.freshConsents,
-              pending: value.freshConsents,
-              selected: value.oldConsents + value.freshConsents,
+              selected: value.freshConsents,
               isSubmitting: true,
             ),
           ),

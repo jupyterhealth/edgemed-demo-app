@@ -1,7 +1,7 @@
 import 'package:jupyter_health/domain/entity/questionnaire/question.dart';
 
 
-//TODO add translations
+//TODO fetch questionnaire from backend
 List<Question> questionnaire = [
   Question.optionalMultipleChoice(
     id: '1',

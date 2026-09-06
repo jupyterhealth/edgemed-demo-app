@@ -36,7 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
     await result.fold(
       (l) async {
         await _localStorageRepository.clear();
-        emit(AuthState.unauthenticated());
+        emit(AuthState.error(l));
       },
       (authToken) async {
         await (
@@ -61,11 +61,6 @@ class AuthCubit extends Cubit<AuthState> {
       },
     );
   }
-
-  // REDACTED_TOKEN most data to test
-  // REDACTED_TOKEN
-
-  // final _accessToken = 'REDACTED_TOKEN';
 
   void fetchUser() async {
     emit(AuthState.loading());

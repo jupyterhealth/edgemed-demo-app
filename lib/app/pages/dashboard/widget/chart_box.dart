@@ -9,20 +9,23 @@ class ChartBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Color(0xFFF4F6F9)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0x62560C33),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Color(0xFFF4F6F9)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0x62560C33),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(padding: const EdgeInsets.all(12), child: child),
       ),
-      child: Padding(padding: const EdgeInsets.all(12), child: child),
     );
   }
 }
