@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jupyter_health/app/common/widgets/error_screen.dart';
 import 'package:jupyter_health/app/common/widgets/loading_screen.dart';
 import 'package:jupyter_health/app/pages/dashboard/cubit/dashboard_cubit.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/blood_pressure/blood_pressure_chart_box.dart';
@@ -9,6 +8,7 @@ import 'package:jupyter_health/app/pages/dashboard/widget/empty_dashboard_widget
 import 'package:jupyter_health/app/pages/dashboard/widget/glucose/glucose_chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/sleep/sleep_chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/steps/steps_chart_box.dart';
+import 'package:jupyter_health/app/pages/error_page/error_page.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
@@ -35,10 +35,10 @@ class DashboardPage extends StatelessWidget {
       create: (context) => getIt<DashboardCubit>()..fetchObservations(),
       child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) => state.map(
-          error: (value) => ErrorScreen(
+          error: (value) => ErrorPage(
             hideAppBar: true,
             failure: value.failure,
-            onRetry: () => context.read<DashboardCubit>().fetchObservations(),
+            onRetry: (_) => context.read<DashboardCubit>().fetchObservations(),
           ),
           loading: (_) => LoadingScreen(hideAppBar: true),
           data: (value) {
@@ -61,20 +61,23 @@ class DashboardPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 12,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 20),
-                              Text(
-                                T(context).welcomeToUcsfEdge,
-                                style: context.typography.headerMedium,
-                              ),
-                              Text(
-                                T(context).currentHealthData,
-                                style: context.typography.bodyLarge,
-                              ),
-                              SizedBox(height: 4),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 20),
+                                Text(
+                                  T(context).welcomeToUcsfEdge,
+                                  style: context.typography.headerMedium,
+                                ),
+                                Text(
+                                  T(context).currentHealthData,
+                                  style: context.typography.bodyLarge,
+                                ),
+                                SizedBox(height: 4),
+                              ],
+                            ),
                           ),
                           GlucoseChartBox(
                             observations: value.glucose.observations,

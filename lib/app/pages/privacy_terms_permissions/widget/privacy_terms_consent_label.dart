@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:jupyter_health/config/env/env.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,9 +13,6 @@ class PrivacyTermsConsentLabel extends StatefulWidget {
 }
 
 class PrivacyTermsConsentLabelState extends State<PrivacyTermsConsentLabel> {
-  static const _privacyPolicyUrl = 'https://example.com/privacy';
-  static const _termsUrl = 'https://example.com/terms';
-
   late final TapGestureRecognizer _privacyPolicyRecognizer;
   late final TapGestureRecognizer _termsRecognizer;
 
@@ -22,9 +20,9 @@ class PrivacyTermsConsentLabelState extends State<PrivacyTermsConsentLabel> {
   void initState() {
     super.initState();
     _privacyPolicyRecognizer = TapGestureRecognizer()
-      ..onTap = () => _launchUrl(_privacyPolicyUrl);
+      ..onTap = () => _launchUrl(Env.privacyPolicyUrl);
     _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () => _launchUrl(_termsUrl);
+      ..onTap = () => _launchUrl(Env.termsAndConditionsUrl);
   }
 
   @override
@@ -44,9 +42,7 @@ class PrivacyTermsConsentLabelState extends State<PrivacyTermsConsentLabel> {
   @override
   Widget build(BuildContext context) {
     final baseStyle = context.typography.bodyMedium;
-    final linkStyle = baseStyle.copyWith(
-      decoration: TextDecoration.underline,
-    );
+    final linkStyle = baseStyle.copyWith(decoration: TextDecoration.underline);
 
     return Text.rich(
       TextSpan(
