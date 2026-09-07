@@ -22,7 +22,7 @@ class OptionalTextWidget extends StatefulWidget {
 
 class _OptionalTextWidgetState extends State<OptionalTextWidget> {
   static const _maxSymbols = 300;
-  static const _maxSymbolsHint = 'Max. number of symbols: $_maxSymbols';
+  static const _maxSymbolsHint = 'Max. number of characters: $_maxSymbols';
 
   late final TextEditingController _controller;
 
