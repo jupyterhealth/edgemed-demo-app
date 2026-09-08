@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jupyter_health/app/common/widgets/button.dart';
@@ -71,13 +73,18 @@ class _PrivacyTermsPermissionsBodyState
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Assets.images.png.appleHealthIcon.image(
-                      width: 32,
-                      height: 32,
-                    ),
+                    Platform.isIOS
+                        ? Assets.images.png.appleHealthIcon.image(
+                            width: 32,
+                            height: 32,
+                          )
+                        : Assets.images.png.googleHealthIcon.image(
+                            width: 32,
+                            height: 32,
+                          ),
                     const SizedBox(width: 12),
                     Text(
-                      T(context).appleHealth,
+                      Platform.isIOS ? T(context).appleHealth : 'Google Health',
                       style: context.typography.headerSmall,
                     ),
                   ],
