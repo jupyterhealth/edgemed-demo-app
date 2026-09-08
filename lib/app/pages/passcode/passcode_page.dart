@@ -104,17 +104,6 @@ class _PasscodePageState extends State<PasscodePage> {
                   ),
                 ),
                 Button(
-                  text: 'Reset',
-                  onPressed: () async {
-                    await getIt<LocalStorageRepository>().clear();
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Reset finish')),
-                      );
-                    }
-                  },
-                ),
-                Button(
                   text: buttonText,
                   isLoading: state.isSubmitting,
                   onPressed: cubit.canSubmit ? cubit.submit : null,
