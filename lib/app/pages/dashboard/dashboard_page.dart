@@ -6,6 +6,7 @@ import 'package:jupyter_health/app/pages/dashboard/cubit/dashboard_cubit.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/blood_pressure/blood_pressure_chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/empty_dashboard_widget.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/glucose/glucose_chart_box.dart';
+import 'package:jupyter_health/app/pages/dashboard/widget/missing_data_widget.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/sleep/sleep_chart_box.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/steps/steps_chart_box.dart';
 import 'package:jupyter_health/app/pages/error_page/error_page.dart';
@@ -43,6 +44,11 @@ class DashboardPage extends StatelessWidget {
           loading: (_) => LoadingScreen(hideAppBar: true),
           data: (value) {
             final isEmpty = _isEmpty(state);
+            final showMissingData =
+                value.bloodPressure.observations.isEmpty ||
+                value.glucose.observations.isEmpty ||
+                value.steps.observations.isEmpty ||
+                value.sleep.observations.isEmpty;
             return isEmpty
                 ? RefreshIndicator(
                     onRefresh: () async =>
@@ -79,43 +85,48 @@ class DashboardPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          GlucoseChartBox(
-                            observations: value.glucose.observations,
-                            isLoadingMore: value.glucose.isLoadingMore,
-                            onLoadMore: value.glucose.hasMore
-                                ? () => context.read<DashboardCubit>().loadMore(
-                                    ObservationType.glucose,
-                                  )
-                                : null,
-                          ),
+                          if (value.glucose.observations.isNotEmpty)
+                            GlucoseChartBox(
+                              observations: value.glucose.observations,
+                              isLoadingMore: value.glucose.isLoadingMore,
+                              onLoadMore: value.glucose.hasMore
+                                  ? () => context
+                                        .read<DashboardCubit>()
+                                        .loadMore(ObservationType.glucose)
+                                  : null,
+                            ),
 
-                          StepsChartBox(
-                            observations: value.steps.observations,
-                            isLoadingMore: value.steps.isLoadingMore,
-                            onLoadMore: value.steps.hasMore
-                                ? () => context.read<DashboardCubit>().loadMore(
-                                    ObservationType.steps,
-                                  )
-                                : null,
-                          ),
-                          SleepChartBox(
-                            observations: value.sleep.observations,
-                            isLoadingMore: value.sleep.isLoadingMore,
-                            onLoadMore: value.sleep.hasMore
-                                ? () => context.read<DashboardCubit>().loadMore(
-                                    ObservationType.sleep,
-                                  )
-                                : null,
-                          ),
-                          BloodPressureChartBox(
-                            observations: value.bloodPressure.observations,
-                            isLoadingMore: value.bloodPressure.isLoadingMore,
-                            onLoadMore: value.bloodPressure.hasMore
-                                ? () => context.read<DashboardCubit>().loadMore(
-                                    ObservationType.bloodPressure,
-                                  )
-                                : null,
-                          ),
+                          if (value.steps.observations.isNotEmpty)
+                            StepsChartBox(
+                              observations: value.steps.observations,
+                              isLoadingMore: value.steps.isLoadingMore,
+                              onLoadMore: value.steps.hasMore
+                                  ? () => context
+                                        .read<DashboardCubit>()
+                                        .loadMore(ObservationType.steps)
+                                  : null,
+                            ),
+                          if (value.sleep.observations.isNotEmpty)
+                            SleepChartBox(
+                              observations: value.sleep.observations,
+                              isLoadingMore: value.sleep.isLoadingMore,
+                              onLoadMore: value.sleep.hasMore
+                                  ? () => context
+                                        .read<DashboardCubit>()
+                                        .loadMore(ObservationType.sleep)
+                                  : null,
+                            ),
+                          if (value.bloodPressure.observations.isNotEmpty)
+                            BloodPressureChartBox(
+                              observations: value.bloodPressure.observations,
+                              isLoadingMore: value.bloodPressure.isLoadingMore,
+                              onLoadMore: value.bloodPressure.hasMore
+                                  ? () => context
+                                        .read<DashboardCubit>()
+                                        .loadMore(ObservationType.bloodPressure)
+                                  : null,
+                            ),
+                          if (showMissingData) MissingDataWidget(),
                           SizedBox(height: 20),
                         ],
                       ),

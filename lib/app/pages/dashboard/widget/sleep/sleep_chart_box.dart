@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jupyter_health/app/pages/dashboard/widget/chart_box.dart';
+import 'package:jupyter_health/app/pages/dashboard/widget/dashboard_card_widget.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/sleep/sleep_chart.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/sleep/sleep_stage_row.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
@@ -72,7 +72,7 @@ class _SleepChartBoxState extends State<SleepChartBox> {
   Widget build(BuildContext context) {
     final sleep = _selectedObservation?.data.mapOrNull(sleep: (value) => value);
 
-    return ChartBox(
+    return DashboardCardWidget(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jupyter_health/app/pages/dashboard/widget/chart_box.dart';
+import 'package:jupyter_health/app/pages/dashboard/widget/dashboard_card_widget.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/glucose/glucose_chart.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/mode_switch.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
@@ -36,7 +36,7 @@ class _GlucoseChartBoxState extends State<GlucoseChartBox> {
 
   @override
   Widget build(BuildContext context) {
-    return ChartBox(
+    return DashboardCardWidget(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

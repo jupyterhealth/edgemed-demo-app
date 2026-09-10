@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jupyter_health/app/pages/dashboard/widget/chart_box.dart';
+import 'package:jupyter_health/app/pages/dashboard/widget/dashboard_card_widget.dart';
 import 'package:jupyter_health/app/pages/dashboard/widget/steps/steps_chart.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/domain/entity/observations/observation.dart';
@@ -34,7 +34,7 @@ class _StepsChartBoxState extends State<StepsChartBox> {
 
   @override
   Widget build(BuildContext context) {
-    return ChartBox(
+    return DashboardCardWidget(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
