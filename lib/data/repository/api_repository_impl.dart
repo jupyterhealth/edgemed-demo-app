@@ -5,12 +5,14 @@ import 'package:jupyter_health/config/env/env.dart';
 import 'package:jupyter_health/config/env/fhir_config.dart';
 import 'package:jupyter_health/data/data_source/api_data_source_impl.dart';
 import 'package:jupyter_health/data/dto/consents/submit_consents_request_dto.dart';
+import 'package:jupyter_health/data/dto/ow/create_ow_user_request_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/fhir_source_dto.dart';
 import 'package:jupyter_health/data/dto/fhe/fhir/questionnaire_response_dto.dart';
 import 'package:jupyter_health/data/utils/api_helpers.dart';
 import 'package:jupyter_health/data/utils/invitation_auth_utils.dart';
 import 'package:jupyter_health/utils/invitation_utils.dart';
 import 'package:jupyter_health/domain/entity/auth_token.dart';
+import 'package:jupyter_health/domain/entity/ow_credentials.dart';
 import 'package:jupyter_health/domain/entity/consents/consent_item.dart';
 import 'package:jupyter_health/domain/entity/consents/patient_consents.dart';
 import 'package:jupyter_health/domain/entity/failure.dart';
@@ -235,10 +237,12 @@ class ApiRepositoryImpl implements ApiRepository {
       );
 
   @override
-  Future<Either<Failure, String>> createOwUser() => safeApiCall(
+  Future<Either<Failure, OwCredentials>> createOwUser() => safeApiCall(
     apiCall: () async {
-      final response = await _apiDataSource.createOwUser();
-      return response.data.owUserId;
+      final response = await _apiDataSource.createOwUser(
+        body: const CreateOwUserRequestDto(includeOwTokens: true),
+      );
+      return response.data;
     },
   );
 }

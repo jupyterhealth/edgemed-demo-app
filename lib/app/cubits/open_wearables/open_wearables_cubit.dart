@@ -37,25 +37,21 @@ class OpenWearablesCubit extends Cubit<OpenWearablesState> {
         return;
       }
 
-      final owUserId = (await _apiRepository.createOwUser()).fold(
+      final owCredentials = (await _apiRepository.createOwUser()).fold(
         (_) => null,
-        (id) => id,
+        (credentials) => credentials,
       );
-      if (owUserId == null || owUserId.isEmpty) {
+      if (owCredentials == null) {
         emit(OpenWearablesState.notConfigured());
         return;
       }
 
       await OpenWearablesHealthSdk.configure(host: Env.owApiUrl);
-
-      final signedInUserId = OpenWearablesHealthSdk.currentUser?.userId;
-      if (!OpenWearablesHealthSdk.isSignedIn || signedInUserId != owUserId) {
-        await OpenWearablesHealthSdk.signIn(
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          userId: owUserId,
-        );
-      }
+      await OpenWearablesHealthSdk.signIn(
+        accessToken: owCredentials.accessToken,
+        refreshToken: owCredentials.refreshToken,
+        userId: owCredentials.userId,
+      );
 
       if (Platform.isAndroid) {
         await OpenWearablesHealthSdk.setProvider(

@@ -6,6 +6,7 @@ import 'package:jupyter_health/domain/entity/failure.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_page.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_type.dart';
 import 'package:jupyter_health/domain/entity/questionnaire/question.dart';
+import 'package:jupyter_health/domain/entity/ow_credentials.dart';
 import 'package:jupyter_health/domain/entity/user.dart';
 
 abstract class ApiRepository {
@@ -29,5 +30,5 @@ abstract class ApiRepository {
   Future<Either<Failure, bool>> hasCompletedQuestionnaire({
     required int patientId,
   });
-  Future<Either<Failure, String>> createOwUser();
+  Future<Either<Failure, OwCredentials>> createOwUser();
 }

@@ -11,7 +11,6 @@ import 'package:jupyter_health/app/pages/passcode/cubit/passcode_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
-import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 @RoutePage()
