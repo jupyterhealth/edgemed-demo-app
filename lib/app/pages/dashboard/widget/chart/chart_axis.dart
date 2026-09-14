@@ -111,7 +111,18 @@ abstract final class ChartAxis {
     Iterable<double> values, {
     double minInterval = 1,
     bool fromZero = false,
+    double? preferredMinY,
+    double? preferredMaxY,
   }) {
+    if (preferredMinY != null && preferredMaxY != null) {
+      return _preferredYBounds(
+        values,
+        preferredMinY: preferredMinY,
+        preferredMaxY: preferredMaxY,
+        minInterval: minInterval,
+      );
+    }
+
     final maxValue = values.reduce((a, b) => a > b ? a : b);
     if (fromZero) {
       final maxY = math.max(maxValue, minInterval);
@@ -143,6 +154,51 @@ abstract final class ChartAxis {
 
     if (paddedMax > maxY) {
       maxY = (paddedMax / interval).ceil() * interval;
+    }
+
+    return (minY: minY, maxY: maxY, interval: interval);
+  }
+
+  static ({double minY, double maxY, double interval}) _preferredYBounds(
+    Iterable<double> values, {
+    required double preferredMinY,
+    required double preferredMaxY,
+    required double minInterval,
+  }) {
+    var minY = preferredMinY;
+    var maxY = preferredMaxY;
+    var overflowMin = false;
+    var overflowMax = false;
+
+    final finite = [
+      for (final value in values)
+        if (value.isFinite) value,
+    ];
+    if (finite.isNotEmpty) {
+      final dataMin = finite.reduce(math.min);
+      final dataMax = finite.reduce(math.max);
+      if (dataMin < minY) {
+        minY = dataMin;
+        overflowMin = true;
+      }
+      if (dataMax > maxY) {
+        maxY = dataMax;
+        overflowMax = true;
+      }
+    }
+
+    final span = math.max(maxY - minY, minInterval);
+    if (overflowMin) minY -= span * _yPadding;
+    if (overflowMax) maxY += span * _yPadding;
+    if (minY < 0) minY = 0;
+
+    final interval = niceYInterval(maxY - minY, minInterval: minInterval);
+    if (overflowMin) {
+      minY = (minY / interval).floor() * interval;
+      if (minY < 0) minY = 0;
+    }
+    if (overflowMax) {
+      maxY = (maxY / interval).ceil() * interval;
     }
 
     return (minY: minY, maxY: maxY, interval: interval);

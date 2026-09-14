@@ -8,6 +8,10 @@ import 'package:jupyter_health/domain/entity/observations/observation.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_data.dart';
 
 class GlucoseChart extends StatelessWidget {
+  /// Stelo / Dexcom CGM reporting range in mg/dL.
+  static const preferredMinY = 40.0;
+  static const preferredMaxY = 400.0;
+
   final List<Observation> observations;
   final bool isHourly;
   final void Function(Observation observation) onObservationSelected;
@@ -53,6 +57,8 @@ class GlucoseChart extends StatelessWidget {
       isHourly: isHourly,
       origin: origin,
       dataMaxX: spots.last.x,
+      preferredMinY: preferredMinY,
+      preferredMaxY: preferredMaxY,
       ySpots: spots,
       selectablePoints: [
         for (final point in selectablePoints)

@@ -24,6 +24,8 @@ class ScrollableLineChart<T> extends StatefulWidget {
   final VoidCallback? onReachOlderData;
   final double minYInterval;
   final bool yFromZero;
+  final double? preferredMinY;
+  final double? preferredMaxY;
   final String Function(double value)? formatY;
 
   const ScrollableLineChart({
@@ -39,6 +41,8 @@ class ScrollableLineChart<T> extends StatefulWidget {
     this.onReachOlderData,
     this.minYInterval = 1,
     this.yFromZero = false,
+    this.preferredMinY,
+    this.preferredMaxY,
     this.formatY,
   });
 
@@ -78,16 +82,23 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
 
   double get _minWindowStart => math.min(0.0, _maxWindowStart);
 
+  bool get _hasPreferredYRange =>
+      widget.preferredMinY != null && widget.preferredMaxY != null;
+
   Iterable<double> _visibleYValues(double windowStart) {
     final pad = _snapInterval;
     final minX = windowStart - pad;
     final maxX = windowStart + _visibleMinutes + pad;
     final visible = [
       for (final spot in widget.ySpots)
-        if (spot.x >= minX && spot.x <= maxX) spot.y,
+        if (spot.x >= minX && spot.x <= maxX && spot.y.isFinite) spot.y,
     ];
     if (visible.isNotEmpty) return visible;
-    return [for (final spot in widget.ySpots) spot.y];
+    if (_hasPreferredYRange) return const [];
+    return [
+      for (final spot in widget.ySpots)
+        if (spot.y.isFinite) spot.y,
+    ];
   }
 
   @override
@@ -366,6 +377,8 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
       _visibleYValues(windowStart),
       minInterval: widget.minYInterval,
       fromZero: widget.yFromZero,
+      preferredMinY: widget.preferredMinY,
+      preferredMaxY: widget.preferredMaxY,
     );
     final targetRange = Offset(yBounds.minY, yBounds.maxY);
     final yTween = _yRangeTween;
