@@ -167,38 +167,25 @@ abstract final class ChartAxis {
   }) {
     var minY = preferredMinY;
     var maxY = preferredMaxY;
-    var overflowMin = false;
-    var overflowMax = false;
 
     final finite = [
       for (final value in values)
         if (value.isFinite) value,
     ];
     if (finite.isNotEmpty) {
-      final dataMin = finite.reduce(math.min);
-      final dataMax = finite.reduce(math.max);
-      if (dataMin < minY) {
-        minY = dataMin;
-        overflowMin = true;
-      }
-      if (dataMax > maxY) {
-        maxY = dataMax;
-        overflowMax = true;
-      }
+      minY = math.min(minY, finite.reduce(math.min));
+      maxY = math.max(maxY, finite.reduce(math.max));
     }
-
-    final span = math.max(maxY - minY, minInterval);
-    if (overflowMin) minY -= span * _yPadding;
-    if (overflowMax) maxY += span * _yPadding;
     if (minY < 0) minY = 0;
 
-    final interval = niceYInterval(maxY - minY, minInterval: minInterval);
-    if (overflowMin) {
-      minY = (minY / interval).floor() * interval;
-      if (minY < 0) minY = 0;
-    }
-    if (overflowMax) {
-      maxY = (maxY / interval).ceil() * interval;
+    final span = math.max(maxY - minY, minInterval);
+    final interval = niceYInterval(span, minInterval: minInterval);
+    minY = (minY / interval).floor() * interval;
+    if (minY < 0) minY = 0;
+    maxY = math.max((maxY / interval).ceil() * interval, minY + interval);
+    if (finite.isNotEmpty &&
+        finite.reduce(math.max) >= maxY - span * _yPadding) {
+      maxY += interval;
     }
 
     return (minY: minY, maxY: maxY, interval: interval);

@@ -8,9 +8,11 @@ import 'package:jupyter_health/domain/entity/observations/observation.dart';
 import 'package:jupyter_health/domain/entity/observations/observation_data.dart';
 
 class GlucoseChart extends StatelessWidget {
-  /// Stelo / Dexcom CGM reporting range in mg/dL.
-  static const preferredMinY = 40.0;
-  static const preferredMaxY = 400.0;
+  /// Readable default window for typical glucose readings (mg/dL).
+  /// Expands when visible values go above 150; empty windows keep this
+  /// range so the axis does not jump to 0–5k.
+  static const preferredMinY = 0.0;
+  static const preferredMaxY = 150.0;
 
   final List<Observation> observations;
   final bool isHourly;
