@@ -126,7 +126,11 @@ class DashboardPage extends StatelessWidget {
                                         .loadMore(ObservationType.bloodPressure)
                                   : null,
                             ),
-                          if (showMissingData) MissingDataWidget(),
+                          if (showMissingData)
+                            MissingDataWidget(
+                              isGlucoseMissing:
+                                  value.glucose.observations.isEmpty,
+                            ),
                           SizedBox(height: 20),
                         ],
                       ),
