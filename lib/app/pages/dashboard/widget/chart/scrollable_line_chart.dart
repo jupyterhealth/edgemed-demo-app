@@ -78,7 +78,13 @@ class _ScrollableLineChartState<T> extends State<ScrollableLineChart<T>>
 
   double get _snapInterval => ChartAxis.snapInterval(isHourly: widget.isHourly);
 
-  double get _maxWindowStart => widget.dataMaxX - _visibleMinutes;
+  double get _alignedDataMaxX {
+    final interval = _snapInterval;
+    if (interval <= 0) return widget.dataMaxX;
+    return (widget.dataMaxX / interval).ceil() * interval;
+  }
+
+  double get _maxWindowStart => _alignedDataMaxX - _visibleMinutes;
 
   double get _minWindowStart => math.min(0.0, _maxWindowStart);
 
