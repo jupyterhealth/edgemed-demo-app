@@ -55,10 +55,13 @@ class GlucoseChart extends StatelessWidget {
       return const SizedBox();
     }
 
+    final lastSelectableX = selectablePoints.last.spot.x;
+    final lastSpotX = spots.last.x;
+
     return ScrollableLineChart<Observation>(
       isHourly: isHourly,
       origin: origin,
-      dataMaxX: spots.last.x,
+      dataMaxX: lastSpotX > lastSelectableX ? lastSpotX : lastSelectableX,
       preferredMinY: preferredMinY,
       preferredMaxY: preferredMaxY,
       ySpots: spots,
@@ -70,12 +73,20 @@ class GlucoseChart extends StatelessWidget {
       onReachOlderData: onLoadMore,
       buildSeries: (chartContext) {
         final maxGap = ChartAxis.snapInterval(isHourly: isHourly);
+        final isolatedXs = ChartAxis.isolatedSpotXs(spots, maxGap: maxGap);
         return [
           _glucoseSeries(
             spots: ChartAxis.spotsWithGaps(spots, maxGap: maxGap),
-            isolatedXs: ChartAxis.isolatedSpotXs(spots, maxGap: maxGap),
+            isolatedXs: isHourly ? const {} : isolatedXs,
             chartContext: chartContext,
+            showHighlightDot: !isHourly,
           ),
+          if (isHourly)
+            _hourlyDots(
+              selectablePoints: selectablePoints,
+              isolatedRawXs: isolatedXs,
+              chartContext: chartContext,
+            ),
         ];
       },
     );
@@ -114,7 +125,7 @@ class GlucoseChart extends StatelessWidget {
 
       if (existing == null || distance < existing.distance) {
         bestByHour[nearestHour] = (
-          spot: FlSpot(minutes.toDouble(), point.value),
+          spot: FlSpot(nearestHour * ChartAxis.minutesPerHour, point.value),
           observation: point.observation,
           distance: distance,
         );
@@ -174,6 +185,7 @@ class GlucoseChart extends StatelessWidget {
     required List<FlSpot> spots,
     required Set<double> isolatedXs,
     required ScrollableChartContext chartContext,
+    bool showHighlightDot = true,
   }) => LineChartBarData(
     isCurved: true,
     curveSmoothness: 0.25,
@@ -183,7 +195,8 @@ class GlucoseChart extends StatelessWidget {
     dotData: FlDotData(
       show: true,
       checkToShowDot: (spot, _) =>
-          spot.x == chartContext.highlightedX || isolatedXs.contains(spot.x),
+          (showHighlightDot && spot.x == chartContext.highlightedX) ||
+          isolatedXs.contains(spot.x),
       getDotPainter: (spot, percent, bar, index) => _dotPainter(
         chartContext.colors,
         isHighlighted: spot.x == chartContext.highlightedX,
@@ -191,6 +204,38 @@ class GlucoseChart extends StatelessWidget {
     ),
     spots: spots,
   );
+
+  LineChartBarData _hourlyDots({
+    required List<({FlSpot spot, Observation observation})> selectablePoints,
+    required Set<double> isolatedRawXs,
+    required ScrollableChartContext chartContext,
+  }) {
+    final isolatedHours = {
+      for (final x in isolatedRawXs) ChartAxis.bucketX(x, isHourly: true),
+    };
+    final hourlySpots = [
+      for (final point in selectablePoints)
+        if (point.spot.x == chartContext.highlightedX ||
+            isolatedHours.contains(point.spot.x))
+          point.spot,
+    ];
+
+    return LineChartBarData(
+      spots: hourlySpots.isEmpty
+          ? const [FlSpot.nullSpot]
+          : hourlySpots,
+      color: Colors.transparent,
+      barWidth: 0,
+      dotData: FlDotData(
+        show: true,
+        checkToShowDot: (spot, _) => spot.x.isFinite,
+        getDotPainter: (spot, percent, bar, index) => _dotPainter(
+          chartContext.colors,
+          isHighlighted: spot.x == chartContext.highlightedX,
+        ),
+      ),
+    );
+  }
 
   FlDotCirclePainter _dotPainter(
     AppColorsTheme colors, {

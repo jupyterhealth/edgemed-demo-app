@@ -25,6 +25,7 @@ import 'package:jupyter_health/domain/repository/api_repository.dart';
 @LazySingleton(as: ApiRepository)
 class ApiRepositoryImpl implements ApiRepository {
   static const _pageSize = 1000;
+  static const _maxObservationPages = 10;
   static const _observationsFrom = '2025-01-01';
 
   final ApiDataSource _apiDataSource;
@@ -115,7 +116,7 @@ class ApiRepositoryImpl implements ApiRepository {
     var url = nextUrl;
     var useSearch = nextUrl == null;
 
-    while (true) {
+    for (var i = 0; i < _maxObservationPages; i++) {
       final response = useSearch
           ? await _apiDataSource.getObservations(
               code: code,
@@ -131,6 +132,8 @@ class ApiRepositoryImpl implements ApiRepository {
       url = page.nextUrls[code];
       if (page.observations.isNotEmpty || url == null) return page;
     }
+
+    return ObservationPage(nextUrls: {code: ?url});
   }
 
   ObservationPage _mergePages(
