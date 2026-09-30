@@ -58,7 +58,9 @@ class _PrivacyTermsPermissionsBodyState
           ),
           const SizedBox(height: 4),
           Text(
-            T(context).permissionsDescription,
+            Platform.isIOS
+                ? T(context).permissionsDescriptionApple
+                : T(context).permissionDescriptionAndroid,
             style: context.typography.bodyLarge,
           ),
           Padding(
@@ -84,7 +86,9 @@ class _PrivacyTermsPermissionsBodyState
                           ),
                     const SizedBox(width: 12),
                     Text(
-                      Platform.isIOS ? T(context).appleHealth : 'Google Health',
+                      Platform.isIOS
+                          ? T(context).appleHealth
+                          : T(context).healthConnect,
                       style: context.typography.headerSmall,
                     ),
                   ],
