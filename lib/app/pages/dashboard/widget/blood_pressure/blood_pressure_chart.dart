@@ -90,7 +90,7 @@ class BloodPressureChart extends StatelessWidget {
           _series(
             spots: gappedSystolic,
             isolatedXs: isolatedXs,
-            color: chartContext.colors.primary,
+            color: chartContext.colors.tertiary,
             chartContext: chartContext,
           ),
         ];
@@ -103,7 +103,7 @@ class BloodPressureChart extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              chartContext.colors.primary.withValues(alpha: 0.45),
+              chartContext.colors.tertiary.withValues(alpha: 0.45),
               diastolicColor.withValues(alpha: 0.2),
             ],
           ),

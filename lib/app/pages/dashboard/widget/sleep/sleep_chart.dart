@@ -249,7 +249,7 @@ class SleepChart extends StatelessWidget {
             radiusY: radiusY,
             gapY: gapY * yCapScale,
             yCapScale: yCapScale,
-            color: chartContext.colors.primary,
+            color: chartContext.colors.tertiary,
           ),
     ];
   }

@@ -30,10 +30,11 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="https"
-                    android:host="jhe.fly.dev"
-                    android:pathPrefix="/clients/ucsf-edge" />
+                <data android:scheme="https" android:host="berkeley-jhe-demo.jupyterhealth.org" android:pathPrefix="/clients/ucsf-edge" />
+                <data android:scheme="https" android:host="ow.berkeley-jhe-demo.jupyterhealth.org" android:pathPrefix="/clients/ucsf-edge" />
+                <data android:scheme="https" android:host="berkeley-jhe-staging.jupyterhealth.org" android:pathPrefix="/clients/ucsf-edge" />
+                <data android:scheme="https" android:host="jhe.fly.dev" android:pathPrefix="/clients/ucsf-edge" />
+                <data android:scheme="https" android:host="ow-poc.fly.dev" android:pathPrefix="/clients/ucsf-edge" />
             </intent-filter>
         </activity>
         <!-- Health Connect: permissions rationale (Android 14+) -->

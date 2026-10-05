@@ -72,7 +72,7 @@ class _BloodPressureChartBoxState extends State<BloodPressureChartBox> {
                     children: [
                       CircleAvatar(
                         radius: 6,
-                        backgroundColor: context.theme.primary,
+                        backgroundColor: context.theme.tertiary,
                       ),
                       Text.rich(
                         TextSpan(

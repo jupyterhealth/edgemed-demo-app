@@ -29,7 +29,7 @@ class ProgressIndicator extends StatelessWidget {
               height: 11,
               width: constraints.maxWidth * (currentQuestion / totalQuestions),
               decoration: BoxDecoration(
-                color: context.theme.loading,
+                color: context.theme.tertiary,
                 borderRadius: BorderRadius.circular(100),
               ),
             ),

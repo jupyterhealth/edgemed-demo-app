@@ -9,11 +9,17 @@ String normalizeInvitationCode(String invitationCode) {
 }
 
 class InvitationLink {
-  static const host = 'jhe.fly.dev';
+  static const hosts = {
+    'berkeley-jhe-demo.jupyterhealth.org',
+    'ow.berkeley-jhe-demo.jupyterhealth.org',
+    'berkeley-jhe-staging.jupyterhealth.org',
+    'jhe.fly.dev',
+    'ow-poc.fly.dev',
+  };
   static const invitationSegment = 'invitation';
 
   static String? codeFrom(Uri uri) {
-    if (uri.host != host) return null;
+    if (!hosts.contains(uri.host)) return null;
 
     final segments = uri.pathSegments
         .where((segment) => segment.isNotEmpty)

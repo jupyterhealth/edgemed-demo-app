@@ -189,7 +189,7 @@ class GlucoseChart extends StatelessWidget {
   }) => LineChartBarData(
     isCurved: true,
     curveSmoothness: 0.25,
-    color: chartContext.colors.primary,
+    color: chartContext.colors.tertiary,
     barWidth: 2,
     isStrokeCapRound: true,
     dotData: FlDotData(
@@ -242,8 +242,8 @@ class GlucoseChart extends StatelessWidget {
     required bool isHighlighted,
   }) => FlDotCirclePainter(
     radius: isHighlighted ? 6 : 5,
-    color: colors.primary,
+    color: colors.tertiary,
     strokeWidth: isHighlighted ? 6 : 0,
-    strokeColor: colors.primary.withValues(alpha: 0.25),
+    strokeColor: colors.tertiary.withValues(alpha: 0.25),
   );
 }

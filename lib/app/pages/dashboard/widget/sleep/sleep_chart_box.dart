@@ -91,7 +91,7 @@ class _SleepChartBoxState extends State<SleepChartBox> {
           ),
           const SizedBox(height: 8),
           SleepStageRow(
-            color: context.theme.primary,
+            color: context.theme.tertiary,
             duration: sleep == null
                 ? '-'
                 : SleepChart.formatDuration(sleep.deep),
