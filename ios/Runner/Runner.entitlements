@@ -6,8 +6,11 @@
 	<true/>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
+		<string>applinks:berkeley-jhe-demo.jupyterhealth.org</string>
+		<string>applinks:ow.berkeley-jhe-demo.jupyterhealth.org</string>
+		<string>applinks:berkeley-jhe-staging.jupyterhealth.org</string>
 		<string>applinks:jhe.fly.dev</string>
-		<string>applinks:jhe.fly.dev?mode=developer</string>
+		<string>applinks:ow-poc.fly.dev</string>
 	</array>
 </dict>
 </plist>

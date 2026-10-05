@@ -7,7 +7,7 @@ abstract final class AppColors {
 
   static const primary = Color(0xFFFFDC00);
   static const secondary = Color(0xFFFFF5B9);
-  static const loading = Color(0xFFCCB003);
+  static const tertiary = Color(0xFFCCB003);
   static const success = Color(0xFF11974D);
   static const successSecondary = Color(0xFFE8FAF1);
 
@@ -28,7 +28,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
   final Color black;
   final Color primary;
   final Color secondary;
-  final Color loading;
+  final Color tertiary;
   final Color success;
   final Color successSecondary;
   final Color textSecondary;
@@ -48,7 +48,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     required this.black,
     required this.primary,
     required this.secondary,
-    required this.loading,
+    required this.tertiary,
     required this.success,
     required this.successSecondary,
     required this.textSecondary,
@@ -67,7 +67,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     black: AppColors.black,
     primary: AppColors.primary,
     secondary: AppColors.secondary,
-    loading: AppColors.loading,
+    tertiary: AppColors.tertiary,
     success: AppColors.success,
     successSecondary: AppColors.successSecondary,
     textSecondary: AppColors.textSecondary,
@@ -88,7 +88,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     Color? black,
     Color? primary,
     Color? secondary,
-    Color? loading,
+    Color? tertiary,
     Color? success,
     Color? successSecondary,
     Color? textSecondary,
@@ -106,7 +106,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     black: black ?? this.black,
     primary: primary ?? this.primary,
     secondary: secondary ?? this.secondary,
-    loading: loading ?? this.loading,
+    tertiary: tertiary ?? this.tertiary,
     success: success ?? this.success,
     successSecondary: successSecondary ?? this.successSecondary,
     textSecondary: textSecondary ?? this.textSecondary,
