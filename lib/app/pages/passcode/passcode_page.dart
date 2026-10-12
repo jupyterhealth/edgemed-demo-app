@@ -9,8 +9,10 @@ import 'package:jupyter_health/app/common/widgets/styled_scaffold.dart';
 import 'package:jupyter_health/app/common/widgets/styled_text_field.dart';
 import 'package:jupyter_health/app/pages/passcode/cubit/passcode_cubit.dart';
 import 'package:jupyter_health/config/di/injectable.dart';
+import 'package:jupyter_health/config/env/env.dart';
 import 'package:jupyter_health/config/l10n/l10n.dart';
 import 'package:jupyter_health/config/routing/app_router.gr.dart';
+import 'package:jupyter_health/domain/repository/local_storage_repository.dart';
 import 'package:jupyter_health/utils/extensions/theme_extension.dart';
 
 @RoutePage()
@@ -107,6 +109,25 @@ class _PasscodePageState extends State<PasscodePage> {
                   isLoading: state.isSubmitting,
                   onPressed: cubit.canSubmit ? cubit.submit : null,
                 ),
+                if (Env.current == EnvironmentType.staging)
+                  Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      Button(
+                        text: 'Reset Passcode',
+                        onPressed: () async {
+                          await getIt<LocalStorageRepository>().clear();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Passcode reset successfully'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
               ],
             ),
           );
