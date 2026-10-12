@@ -25,7 +25,7 @@ class GlucoseChartBox extends StatefulWidget {
 }
 
 class _GlucoseChartBoxState extends State<GlucoseChartBox> {
-  bool _mode = true;
+  bool _isHourly = true;
   Observation? _selectedObservation;
 
   @override
@@ -57,8 +57,8 @@ class _GlucoseChartBoxState extends State<GlucoseChartBox> {
                 ],
               ),
               ModeSwitch(
-                value: _mode,
-                onChanged: (value) => setState(() => _mode = value),
+                value: _isHourly,
+                onChanged: (value) => setState(() => _isHourly = value),
               ),
             ],
           ),
@@ -90,7 +90,7 @@ class _GlucoseChartBoxState extends State<GlucoseChartBox> {
                     ? ''
                     : T(context).measured(
                         _selectedObservation!.date.toMeasuredLabel(
-                          isHourly: _mode,
+                          isHourly: _isHourly,
                         ),
                       ),
                 style: context.typography.bodySmall,
@@ -99,7 +99,7 @@ class _GlucoseChartBoxState extends State<GlucoseChartBox> {
           ),
           SizedBox(height: 12),
           GlucoseChart(
-            isHourly: _mode,
+            isHourly: _isHourly,
             onObservationSelected: (observation) =>
                 setState(() => _selectedObservation = observation),
             observations: widget.observations,

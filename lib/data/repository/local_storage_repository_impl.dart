@@ -33,10 +33,7 @@ class LocalStorageRepositoryImpl implements LocalStorageRepository {
       await Hive.deleteBoxFromDisk(_boxName);
       await _secureStorage.delete(key: _Key.encryptionKey.name);
       final freshKey = await _getOrCreateEncryptionKey();
-      return Hive.openBox(
-        'neurotap',
-        encryptionCipher: HiveAesCipher(freshKey),
-      );
+      return Hive.openBox(_boxName, encryptionCipher: HiveAesCipher(freshKey));
     }
   }
 
