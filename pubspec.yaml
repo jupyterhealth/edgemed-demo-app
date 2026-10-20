@@ -33,7 +33,6 @@ dependencies:
   open_wearables_health_sdk: ^0.0.22
   sentry_flutter: ^9.26.0
   fl_chart: ^1.2.0
-  firebase_core: ^4.13.0
   app_links: ^7.2.1
   url_launcher: ^6.3.2
   flutter_native_splash: ^2.4.8
@@ -62,7 +61,7 @@ flutter:
   generate: true
   uses-material-design: true
   config:
-    # Firebase plugins require iOS 15. Flutter's generated SwiftPM package
+    # The app targets iOS 15. Flutter's generated SwiftPM package
     # hardcodes 13.0 and that value is what Xcode archive validates.
     enable-swift-package-manager: false
   assets:

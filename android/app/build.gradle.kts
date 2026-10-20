@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -86,7 +85,6 @@ kotlin {
 }
 
 dependencies {
-  implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
   // AGP 9 R8 full mode: older work-runtime lacks consumer rules for WorkDatabase_Impl.
   implementation("androidx.work:work-runtime:2.11.1")
 }
