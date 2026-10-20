@@ -2,7 +2,7 @@
 
 A Flutter app for iOS and Android that lets a patient share wearable health data with a study on a [JupyterHealth Exchange](https://github.com/jupyterhealth/jupyterhealth-exchange) (JHE) server.
 
-A patient opens an invitation link from their study team, accepts the consent and terms, sets a passcode, and connects a wearable through [Open Wearables](https://github.com/the-commons-project/open-wearables). The app then uploads blood glucose, blood pressure, heart rate, step and sleep data to JHE and shows it on a dashboard, with an intake questionnaire sent to the study as a FHIR QuestionnaireResponse.
+A patient opens an invitation link from their study team, accepts the consent and terms, sets a passcode, and fills in an intake questionnaire, which the app sends to the study as a FHIR QuestionnaireResponse. The [Open Wearables](https://github.com/the-commons-project/open-wearables) SDK then syncs blood glucose readings from the phone's health store (HealthKit or Health Connect) to the Open Wearables server, from which JHE collects them. The dashboard reads the patient's data back from JHE and charts blood glucose, blood pressure, heart rate, steps and sleep.
 
 ## Requirements
 
