@@ -2,7 +2,7 @@
 """Create a JHE patient + invitation, redeem it, print access token.
 
 Usage:
-  python3 scripts/jhe_create_invite.py
+  JHE_PRACTITIONER_PASSWORD=... python3 scripts/jhe_create_invite.py
 
 For an invitation link only (existing patient, no redeem):
   python3 scripts/jhe_invite_existing.py --patient-id 40001
@@ -13,6 +13,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import re
 import secrets
 import sys
@@ -29,7 +30,7 @@ BASE_URL = "https://jhe.fly.dev"
 
 # Practitioner used to create the patient / invitation (seeded staging users)
 PRACTITIONER_EMAIL = "manager_mary@example.com"
-PRACTITIONER_PASSWORD = "REDACTED"
+PRACTITIONER_PASSWORD = os.environ.get("JHE_PRACTITIONER_PASSWORD", "")
 
 # OAuth client for practitioner login (JHE Admin UI on staging)
 OAUTH_CLIENT_ID = "uxxQf9p5J4GCv2jzdXtOOKcYXAc18In0hJzDCLc1"
@@ -128,6 +129,8 @@ def _pkce() -> tuple[str, str]:
 
 
 def login_practitioner() -> str:
+    if not PRACTITIONER_PASSWORD:
+        raise RuntimeError("Set JHE_PRACTITIONER_PASSWORD to the practitioner's password")
     jar = CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
 
