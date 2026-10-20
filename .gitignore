@@ -62,3 +62,6 @@ sentry.properties
 
 # FVM Version Cache
 .fvm/
+
+# Build output
+scripts/build/
